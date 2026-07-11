@@ -8,7 +8,7 @@ using System;
 
 namespace RAXY.Quest
 {
-    [CreateAssetMenu(fileName = "QuestSO", menuName = "Scriptable Objects/QuestSO")]
+    [CreateAssetMenu(fileName = "QuestSO", menuName = "RAXY/Quest/QuestSO")]
     public class QuestSO : ScriptableObject
     {
         [TitleGroup("Quest Name")]
