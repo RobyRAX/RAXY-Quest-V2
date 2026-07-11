@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RAXY.Quest
 {
-    public class QuestManager : QuestManagerBase
+    public class QuestManagerExample : QuestManagerBase
     {
         [TitleGroup("Quest Database")]
         [SerializeField] QuestDatabaseSO questDatabase;
