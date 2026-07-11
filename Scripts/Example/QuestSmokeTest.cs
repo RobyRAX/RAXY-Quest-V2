@@ -5,50 +5,36 @@ namespace RAXY.Quest
 {
     public class QuestSmokeTest : MonoBehaviour
     {
-        [TitleGroup("Kill Test")]
+        [TitleGroup("Objective Test")]
         [SerializeField] 
-        QuestStepObjectiveEventSO killEventSO;
+        [OnValueChanged("OnObjectiveEventSoChanged")]
+        QuestStepObjectiveEventSO objectiveEventSO;
 
-        [TitleGroup("Kill Test")]
+        [TitleGroup("Objective Test")]
         [SerializeField] 
-        string killTarget = "Smallin";
+        [HideLabel]
+        ObjectiveParameter param = new ObjectiveParameter();
 
-        [TitleGroup("Kill Test")]
-        [Button]
-        void RaiseKillEvent()
+#if UNITY_EDITOR
+        void OnObjectiveEventSoChanged()
         {
-            if (killEventSO == null)
-            {
-                Debug.LogWarning("[QuestSmokeTest] Kill event SO is not assigned.");
-                return;
-            }
-
-            killEventSO.Raise(killTarget);
-            Debug.Log($"[QuestSmokeTest] Raised kill event for '{killTarget}'.");
+            param.Set_ParamProvider(objectiveEventSO);
         }
+#endif
 
-        [TitleGroup("Collect Test")]
-        [SerializeField] 
-        QuestStepObjectiveEventSO collectEventSO;
-
-        [TitleGroup("Collect Test")]
-        [SerializeField] 
-        string collectTarget = "Coin";
-
-        [TitleGroup("Collect Test")]
+        [TitleGroup("Objective Test")]
         [Button]
-        void RaiseCollectEvent()
+        void RaiseObjectiveEvent()
         {
-            if (collectEventSO == null)
+            if (objectiveEventSO == null)
             {
                 Debug.LogWarning("[QuestSmokeTest] Collect event SO is not assigned.");
                 return;
             }
 
-            collectEventSO.Raise(collectTarget);
-            Debug.Log($"[QuestSmokeTest] Raised collect event for '{collectTarget}'.");
+            objectiveEventSO.Raise(param);
+            Debug.Log($"[QuestSmokeTest] Raised collect event for '{param}'.");
         }
-
 
         [TitleGroup("Requirement Test")]
         [SerializeField] 

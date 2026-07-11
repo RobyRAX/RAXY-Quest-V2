@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 namespace RAXY.Quest
 {
     [CreateAssetMenu(fileName = "QuestStepObjectiveEventSO", menuName = "RAXY/Quest/QuestStepObjectiveEventSO")]
-    public class QuestStepObjectiveEventSO : EventSO<string>, IQuestStepObjectiveParameterProvider
+    public class QuestStepObjectiveEventSO : EventSO<ObjectiveParameter>, IQuestStepObjectiveParameterProvider
     {
         [TitleGroup("Objective")]
         public bool showProgress;
@@ -48,5 +48,24 @@ namespace RAXY.Quest
                     return parameters;
             }
         }
+    }
+
+    [Serializable]
+    public struct ObjectiveParameter
+    {
+        [ValueDropdown("Parameters")]
+        public string parameter;
+
+        public float amount;
+
+#if UNITY_EDITOR
+        public IQuestStepObjectiveParameterProvider paramProvider;
+        public List<string> Parameters => paramProvider?.Parameters;
+
+        public void Set_ParamProvider(IQuestStepObjectiveParameterProvider param)
+        {
+            paramProvider = param;
+        }
+#endif
     }
 }

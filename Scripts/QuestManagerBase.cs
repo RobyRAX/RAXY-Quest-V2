@@ -39,6 +39,10 @@ namespace RAXY.Quest
             QuestDatabase = database;
         }
 
+        protected virtual void Awake()
+        {
+        }
+
         public void RefreshQuestStatusDict()
         {
             if (QuestStatusDict == null)
@@ -50,7 +54,7 @@ namespace RAXY.Quest
 
         [TitleGroup("All Quests")]
         [Button]
-        public void InitAllQuest()
+        public void Init()
         {
             if (QuestDatabase == null)
             {
@@ -213,7 +217,7 @@ namespace RAXY.Quest
                     if (eventSO == null || _requirementHandlers.ContainsKey(eventSO))
                         continue;
 
-                    var requirementId = eventSO.requirementId;
+                    var requirementId = eventSO.RequirementId;
                     Action<QuestRequirementParameter> handler = param =>
                     {
                         if (string.IsNullOrEmpty(requirementId))

@@ -43,7 +43,7 @@ namespace RAXY.Quest
                 if (entry?.requirementEventSO == null)
                     continue;
 
-                var requirementId = entry.requirementEventSO.requirementId;
+                var requirementId = entry.requirementEventSO.RequirementId;
                 if (string.IsNullOrEmpty(requirementId) ||
                     !trackedRequirements.TryGetValue(requirementId, out var current))
                 {

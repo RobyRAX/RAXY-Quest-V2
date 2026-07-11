@@ -6,12 +6,18 @@ namespace RAXY.Quest
     public class QuestManagerExample : QuestManagerBase
     {
         [TitleGroup("Quest Database")]
-        [SerializeField] QuestDatabaseSO questDatabase;
+        [SerializeField] 
+        [PropertyOrder(-1)]
+        QuestDatabaseSO questDatabase;
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             if (questDatabase != null)
                 SetQuestDatabase(questDatabase);
+
+            Init();
         }
     }
 }

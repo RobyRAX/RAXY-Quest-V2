@@ -34,7 +34,7 @@ namespace RAXY.Quest
         public event Action<QuestStepObjective_Runtime> OnProgressed;
         public event Action<QuestStepObjective_Runtime> OnCompleted;
 
-        Action<string> _eventHandler;
+        Action<ObjectiveParameter> _eventHandler;
         bool _isSubscribed;
 
         public QuestStepObjective_Runtime(QuestStepObjective data)
@@ -93,13 +93,13 @@ namespace RAXY.Quest
                 MarkCompleted();
         }
 
-        void OnEventRaised(string param)
+        void OnEventRaised(ObjectiveParameter param)
         {
             var objectiveParameter = QuestStepObjectiveData?.objectiveParameter;
-            if (!string.IsNullOrEmpty(objectiveParameter) && param != objectiveParameter)
+            if (!string.IsNullOrEmpty(objectiveParameter) && param.parameter != objectiveParameter)
                 return;
 
-            AddProgress(1f);
+            AddProgress(param.amount);
         }
 
         void MarkCompleted()

@@ -9,7 +9,19 @@ namespace RAXY.Quest
     public class QuestRequirementEventSO : EventSO<QuestRequirementParameter>
     {
         [TitleGroup("Quest Requirement Setting")]
-        public string requirementId;
+        [SerializeField]
+        string requirementId;
+
+        public string RequirementId
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(requirementId))
+                    return name;
+                else
+                    return requirementId;
+            }
+        }
     }
 
     public struct QuestRequirementParameter
