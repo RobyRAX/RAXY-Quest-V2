@@ -1,0 +1,15 @@
+{
+  "name": "com.raxy.quest2",
+  "version": "1.0.0",
+  "displayName": "RAXY Quest 2",
+  "description": "Event-driven quest system with step/objective runtime tracking.",
+  "author": {
+    "name": "RobyRAX",
+    "url": "https://github.com/RobyRAX"
+  },
+  "dependencies": {
+    "com.raxy.event": "1.0.0",
+    "com.raxy.utility.localization": "1.0.0",
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
+  }
+}

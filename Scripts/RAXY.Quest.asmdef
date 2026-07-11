@@ -1,0 +1,18 @@
+{
+    "name": "RAXY.Quest",
+    "rootNamespace": "RAXY.Quest",
+    "references": [
+        "RAXY.Event",
+        "RAXY.Utility.Localization",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
