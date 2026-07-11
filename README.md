@@ -13,7 +13,7 @@ RAXY Quest 2 provides an event-driven quest foundation for Unity projects: quest
 
 ## Setup
 
-1. Create a concrete manager extending `QuestManagerBase` (see `Example/QuestManager.cs`).
+1. Create a concrete manager extending `QuestManagerBase` (see `Scripts/Example/QuestManager.cs`).
 2. Create a `QuestDatabaseSO` asset and fill it with `QuestSO` assets.
 3. Create `QuestRequirementEventSO` and `QuestStepObjectiveEventSO` assets and wire them into quest data.
 4. Call `InitAllQuest()` at bootstrap, then `TakeQuest(questId)` when starting quests.
@@ -28,4 +28,4 @@ RAXY Quest 2 provides an event-driven quest foundation for Unity projects: quest
 
 ## Notes
 
-Game-specific objective raising, quest UI, save/load, and bootstrap wiring should live in your project, not in this package. `Example/` contains a concrete manager and a smoke-test component for manual testing.
+Game-specific objective raising, quest UI, save/load, and bootstrap wiring should live in your project, not in this package. `Scripts/Example/` contains a concrete manager and a smoke-test component for manual testing.
