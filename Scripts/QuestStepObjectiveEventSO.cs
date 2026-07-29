@@ -53,7 +53,7 @@ namespace RAXY.Quest
     [Serializable]
     public struct ObjectiveParameter
     {
-        [ValueDropdown("Parameters")]
+        [ValueDropdown("Parameters", AppendNextDrawer = true)]
         public string parameter;
 
         public float amount;
