@@ -83,7 +83,8 @@ namespace RAXY.Quest
             step.OnObjectiveCompleted += ObjectiveCompletedHandler;
 
             step.Activate();
-            OnStepChanged?.Invoke(index);
+            // Use CurrentQuestStepIndex so nested auto-advances report the final step.
+            OnStepChanged?.Invoke(CurrentQuestStepIndex);
         }
 
         public void CompleteActiveStep()
@@ -91,10 +92,14 @@ namespace RAXY.Quest
             if (ActiveStep == null)
                 return;
 
-            if (ActiveStep.State != QuestCompletionState.Completed)
-                ActiveStep.Deactivate();
+            if (ActiveStep.State == QuestCompletionState.Completed)
+            {
+                StepCompletedHandler();
+                return;
+            }
 
-            StepCompletedHandler();
+            // Mark the step completed so visibility conditions tied to it can revert.
+            ActiveStep.ForceComplete();
         }
 
         public void Deactivate()

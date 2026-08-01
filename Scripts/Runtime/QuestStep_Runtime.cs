@@ -171,6 +171,11 @@ namespace RAXY.Quest
                 CompleteStep();
         }
 
+        public void ForceComplete()
+        {
+            CompleteStep();
+        }
+
         void CompleteStep()
         {
             if (State == QuestCompletionState.Completed)

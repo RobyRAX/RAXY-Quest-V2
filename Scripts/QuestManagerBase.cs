@@ -34,6 +34,45 @@ namespace RAXY.Quest
 
         readonly Dictionary<QuestRequirementEventSO, Action<QuestRequirementParameter>> _requirementHandlers = new();
 
+        [TitleGroup("Quest Objects")]
+        public List<QuestObject> questObjects = new();
+
+        [TitleGroup("Quest Objects")]
+        [Button]
+        public void ScanQuestObjects()
+        {
+            questObjects?.Clear();
+
+            var allQuestObjects = FindObjectsByType<QuestObject>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None);
+
+            foreach (var qo in allQuestObjects)
+            {
+                qo.Set_QuestManager(this);
+                questObjects.Add(qo);
+            }
+
+            RefreshQuestObjects();
+        }
+
+        [TitleGroup("Quest Objects")]
+        [Button]
+        public void RefreshQuestObjects()
+        {
+            if (questObjects == null)
+                return;
+
+            for (int i = 0; i < questObjects.Count; i++)
+            {
+                var qo = questObjects[i];
+                if (qo == null)
+                    continue;
+
+                qo.Refresh();
+            }
+        }
+
         public void SetQuestDatabase(IQuestDatabase database)
         {
             QuestDatabase = database;
@@ -41,6 +80,7 @@ namespace RAXY.Quest
 
         protected virtual void Awake()
         {
+            ScanQuestObjects();
         }
 
         public void RefreshQuestStatusDict()
@@ -50,6 +90,8 @@ namespace RAXY.Quest
 
             foreach (var status in QuestStatusDict.Values)
                 status.UpdateRequirementStatus(TrackedRequirementDict);
+
+            RefreshQuestObjects();
         }
 
         [TitleGroup("All Quests")]
@@ -134,9 +176,21 @@ namespace RAXY.Quest
             status.SetInProgress();
 
             var questRuntime = new Quest_Runtime(questData);
-            questRuntime.OnStepChanged += stepIndex => OnQuestStepChanged?.Invoke(questId, stepIndex);
-            questRuntime.OnObjectiveProgressed += objective => OnObjectiveProgressed?.Invoke(objective);
-            questRuntime.OnObjectiveCompleted += objective => OnObjectiveCompleted?.Invoke(objective);
+            questRuntime.OnStepChanged += stepIndex =>
+            {
+                OnQuestStepChanged?.Invoke(questId, stepIndex);
+                RefreshQuestObjects();
+            };
+            questRuntime.OnObjectiveProgressed += objective =>
+            {
+                OnObjectiveProgressed?.Invoke(objective);
+                RefreshQuestObjects();
+            };
+            questRuntime.OnObjectiveCompleted += objective =>
+            {
+                OnObjectiveCompleted?.Invoke(objective);
+                RefreshQuestObjects();
+            };
             questRuntime.OnQuestCompleted += () => QuestCompletedHandler(questId);
 
             ActiveQuests.Add(questId, questRuntime);
@@ -148,6 +202,7 @@ namespace RAXY.Quest
 
             Debug.Log($"[QuestManager] Quest '{questId}' started.");
             OnQuestTaken?.Invoke(questId);
+            RefreshQuestObjects();
         }
 
         [TitleGroup("Debug Function")]
@@ -171,6 +226,7 @@ namespace RAXY.Quest
                 status.SetCompleted();
 
             OnQuestCompleted?.Invoke(questId);
+            RefreshQuestObjects();
         }
 
         public Quest_Runtime GetActiveQuest(string questId)
@@ -197,6 +253,7 @@ namespace RAXY.Quest
 
             Debug.Log($"[QuestManager] Quest '{questId}' completed.");
             OnQuestCompleted?.Invoke(questId);
+            RefreshQuestObjects();
         }
 
         void SubscribeAllRequirements()
