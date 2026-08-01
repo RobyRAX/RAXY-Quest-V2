@@ -8,7 +8,7 @@ namespace RAXY.Quest
         [TitleGroup("Quest Database")]
         [SerializeField] 
         [PropertyOrder(-1)]
-        QuestDatabaseSO questDatabase;
+        QuestDatabaseExampleSO questDatabase;
 
         protected override void Awake()
         {
@@ -17,7 +17,7 @@ namespace RAXY.Quest
             if (questDatabase != null)
                 SetQuestDatabase(questDatabase);
 
-            Init();
+            InitQuestManager();
         }
     }
 }

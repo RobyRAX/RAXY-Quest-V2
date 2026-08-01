@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RAXY.Quest
 {
@@ -9,7 +10,21 @@ namespace RAXY.Quest
     {
         [TitleGroup("Editor Data")]
         [SerializeField]
-        QuestDatabaseSO editor_QuestDb;
+        Object editor_QuestDb;
+
+        IQuestDatabase QuestDatabase
+        {
+            get
+            {
+                if (editor_QuestDb is null)
+                    return null;
+                
+                if (editor_QuestDb is IQuestDatabase questDb)
+                    return questDb;
+                
+                return null;
+            }
+        }
 
         [TitleGroup("Settings")]
         public bool defaultVisibilityState;
@@ -102,7 +117,7 @@ namespace RAXY.Quest
                 if (condition == null)
                     continue;
 
-                condition.EditorDb = editor_QuestDb;
+                condition.EditorDb = QuestDatabase;
                 condition.SyncStepsFromQuest();
             }
         }
@@ -113,7 +128,7 @@ namespace RAXY.Quest
     public class QuestObjectToggleCondition
     {
         [NonSerialized]
-        public QuestDatabaseSO EditorDb;
+        public IQuestDatabase EditorDb;
 
 #if UNITY_EDITOR
         [ValueDropdown(nameof(EditorQuestIds), AppendNextDrawer = true)]

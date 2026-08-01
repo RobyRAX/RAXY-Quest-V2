@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace RAXY.Quest
 {
-    [CreateAssetMenu(fileName = "QuestDatabaseSO", menuName = "RAXY/Quest/QuestDatabaseSO")]
-    public class QuestDatabaseSO : ScriptableObject, IQuestDatabase
+    [CreateAssetMenu(fileName = "QuestDatabaseExampleSO", menuName = "RAXY/Quest/QuestDatabaseExampleSO")]
+    public class QuestDatabaseExampleSO : ScriptableObject, IQuestDatabase
     {
         [SerializeField]
         List<QuestSO> quests;

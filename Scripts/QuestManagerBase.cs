@@ -13,6 +13,8 @@ namespace RAXY.Quest
         public event Action<QuestStepObjective_Runtime> OnObjectiveProgressed;
         public event Action<QuestStepObjective_Runtime> OnObjectiveCompleted;
 
+        [TitleGroup("Dependency")]
+        [ShowInInspector]
         public IQuestDatabase QuestDatabase { get; private set; }
 
         [TitleGroup("Requirements")]
@@ -37,8 +39,8 @@ namespace RAXY.Quest
         [TitleGroup("Quest Objects")]
         public List<QuestObject> questObjects = new();
 
-        [TitleGroup("Quest Objects")]
-        [Button]
+        [HorizontalGroup("Quest Objects/Action")]
+        [Button("Scan")]
         public void ScanQuestObjects()
         {
             questObjects?.Clear();
@@ -56,8 +58,8 @@ namespace RAXY.Quest
             RefreshQuestObjects();
         }
 
-        [TitleGroup("Quest Objects")]
-        [Button]
+        [HorizontalGroup("Quest Objects/Action")]
+        [Button("Refresh")]
         public void RefreshQuestObjects()
         {
             if (questObjects == null)
@@ -73,6 +75,8 @@ namespace RAXY.Quest
             }
         }
 
+        [TitleGroup("Dependency")]
+        [Button]
         public void SetQuestDatabase(IQuestDatabase database)
         {
             QuestDatabase = database;
@@ -96,11 +100,11 @@ namespace RAXY.Quest
 
         [TitleGroup("All Quests")]
         [Button]
-        public void Init()
+        public void InitQuestManager()
         {
             if (QuestDatabase == null)
             {
-                Debug.LogWarning("[QuestManager] QuestDatabase is not set.");
+                Debug.LogError("[QuestManager] QuestDatabase is not set.");
                 return;
             }
 
@@ -163,9 +167,7 @@ namespace RAXY.Quest
             if (ActiveQuests.ContainsKey(questId))
                 return;
 
-            QuestSO questData = status.QuestSO ?? (QuestDatabase is QuestDatabaseSO databaseSO
-                ? databaseSO.GetQuest(questId)
-                : QuestDatabase.Quests?.Find(q => q != null && q.QuestId == questId));
+            QuestSO questData = status.QuestSO ?? QuestDatabase?.GetQuest(questId);
 
             if (questData == null)
             {
