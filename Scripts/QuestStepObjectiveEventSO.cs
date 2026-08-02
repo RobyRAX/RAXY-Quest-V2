@@ -14,9 +14,6 @@ namespace RAXY.Quest
     public class QuestStepObjectiveEventSO : EventSO<ObjectiveParameter>, IQuestStepObjectiveParameterProvider
     {
         [TitleGroup("Objective")]
-        public bool showProgress;
-
-        [TitleGroup("Objective")]
         [SerializeField]
         bool useOverrider;
 

@@ -8,9 +8,18 @@ using System;
 
 namespace RAXY.Quest
 {
+    public enum QuestType
+    {
+        Main,
+        Side
+    }
+
     [CreateAssetMenu(fileName = "QuestSO", menuName = "RAXY/Quest/QuestSO")]
     public class QuestSO : ScriptableObject
     {
+        [TitleGroup("Quest Type")]
+        public QuestType questType = QuestType.Main;
+
         [TitleGroup("Quest Name")]
         [HideLabel]
         [HideReferenceObjectPicker]

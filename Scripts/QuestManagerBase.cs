@@ -12,10 +12,19 @@ namespace RAXY.Quest
         public event Action<string, int> OnQuestStepChanged;
         public event Action<QuestStepObjective_Runtime> OnObjectiveProgressed;
         public event Action<QuestStepObjective_Runtime> OnObjectiveCompleted;
+        public event Action<string> OnTrackedQuestChanged;
 
         [TitleGroup("Dependency")]
         [ShowInInspector]
         public IQuestDatabase QuestDatabase { get; private set; }
+
+        [TitleGroup("Tracked Quest")]
+        [ShowInInspector]
+        public string TrackedQuest => trackedQuest;
+
+        [TitleGroup("Tracked Quest")]
+        [SerializeField]
+        string trackedQuest;
 
         [TitleGroup("Requirements")]
         [ShowInInspector]
@@ -205,6 +214,32 @@ namespace RAXY.Quest
             Debug.Log($"[QuestManager] Quest '{questId}' started.");
             OnQuestTaken?.Invoke(questId);
             RefreshQuestObjects();
+
+            if (string.IsNullOrEmpty(trackedQuest))
+                SetQuestAsTracked(questId);
+        }
+
+        [TitleGroup("Tracked Quest")]
+        [Button]
+        public void SetQuestAsTracked(string questId)
+        {
+            if (string.IsNullOrEmpty(questId))
+                return;
+
+            ActiveQuests ??= new Dictionary<string, Quest_Runtime>();
+            if (!ActiveQuests.ContainsKey(questId))
+                return;
+
+            trackedQuest = questId;
+            OnTrackedQuestChanged?.Invoke(trackedQuest);
+        }
+
+        [TitleGroup("Tracked Quest")]
+        [Button]
+        public void UntrackQuest()
+        {
+            trackedQuest = "";
+            OnTrackedQuestChanged?.Invoke(trackedQuest);
         }
 
         [TitleGroup("Debug Function")]
@@ -219,6 +254,9 @@ namespace RAXY.Quest
                 Debug.LogWarning($"[QuestManager] QuestId '{questId}' is not active.");
                 return;
             }
+
+            if (trackedQuest == questId)
+                UntrackQuest();
 
             var questRuntime = ActiveQuests[questId];
             questRuntime.Deactivate();
@@ -247,6 +285,9 @@ namespace RAXY.Quest
         {
             if (ActiveQuests == null || !ActiveQuests.ContainsKey(questId))
                 return;
+
+            if (trackedQuest == questId)
+                UntrackQuest();
 
             ActiveQuests.Remove(questId);
 
