@@ -36,6 +36,18 @@ namespace RAXY.Quest
         [HideReferenceObjectPicker]
         public List<QuestStep> questSteps;
 
+        [TitleGroup("Quest Actions")]
+        [SerializeReference]
+        [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Label", Expanded = true)]
+        [HideReferenceObjectPicker]
+        public List<QuestAction> actions_OnTaken = new();
+
+        [TitleGroup("Quest Actions")]
+        [SerializeReference]
+        [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Label", Expanded = true)]
+        [HideReferenceObjectPicker]
+        public List<QuestAction> actions_OnCompleted = new();
+
         public string QuestId => name;
         public string QuestName => questNameProvider.String;
 

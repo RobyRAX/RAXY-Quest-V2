@@ -16,10 +16,18 @@ namespace RAXY.Quest
 
         public QuestStepMode stepMode;
 
+        [TitleGroup("Step Actions")]
+        [SerializeReference]
+        [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Label", Expanded = true)]
+        [HideReferenceObjectPicker]
+        public List<QuestAction> actions_OnEnter = new();
+
+        [TitleGroup("Objectives")]
         [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "ObjectiveDescription", Expanded = true)]
         [HideReferenceObjectPicker]
         public List<QuestStepObjective> mainObjectives;
-
+        
+        [TitleGroup("Objectives")]
         [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "ObjectiveDescription", Expanded = true)]
         [HideReferenceObjectPicker]
         public List<QuestStepObjective> optionalObjectives;

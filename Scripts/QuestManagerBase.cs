@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -190,6 +192,7 @@ namespace RAXY.Quest
             questRuntime.OnStepChanged += stepIndex =>
             {
                 OnQuestStepChanged?.Invoke(questId, stepIndex);
+                Process_StepEnterActions(questId, questData, stepIndex);
                 RefreshQuestObjects();
             };
             questRuntime.OnObjectiveProgressed += objective =>
@@ -206,13 +209,17 @@ namespace RAXY.Quest
 
             ActiveQuests.Add(questId, questRuntime);
 
+            Debug.Log($"[QuestManager] Quest '{questId}' started.");
+            OnQuestTaken?.Invoke(questId);
+            Process_QuestActions(
+                questData.actions_OnTaken,
+                new QuestActionContext(questId, questData, this, QuestActionTrigger.Taken));
+
             if (questRuntime.QuestSteps_Runtime.Count > 0)
                 questRuntime.ActivateStep(0);
             else
                 QuestCompletedHandler(questId);
 
-            Debug.Log($"[QuestManager] Quest '{questId}' started.");
-            OnQuestTaken?.Invoke(questId);
             RefreshQuestObjects();
 
             if (string.IsNullOrEmpty(trackedQuest))
@@ -255,6 +262,8 @@ namespace RAXY.Quest
                 return;
             }
 
+            QuestSO questData = ResolveQuestSO(questId);
+
             if (trackedQuest == questId)
                 UntrackQuest();
 
@@ -266,6 +275,9 @@ namespace RAXY.Quest
                 status.SetCompleted();
 
             OnQuestCompleted?.Invoke(questId);
+            Process_QuestActions(
+                questData?.actions_OnCompleted,
+                new QuestActionContext(questId, questData, this, QuestActionTrigger.Completed));
             RefreshQuestObjects();
         }
 
@@ -281,10 +293,65 @@ namespace RAXY.Quest
             return QuestStatusDict.TryGetValue(questId, out var status) ? status : null;
         }
 
+        public async UniTask Process_QuestActionsAsync(
+            List<QuestAction> actions,
+            QuestActionContext ctx,
+            CancellationToken ct = default)
+        {
+            if (actions == null)
+                return;
+
+            foreach (var action in actions)
+            {
+                ct.ThrowIfCancellationRequested();
+                if (action == null)
+                    continue;
+
+                await action.ExecuteAsync(ctx, ct);
+            }
+        }
+
+        void Process_QuestActions(List<QuestAction> actions, QuestActionContext ctx)
+            => Process_QuestActionsAsync(actions, ctx).Forget();
+
+        void Process_StepEnterActions(string questId, QuestSO questData, int stepIndex)
+        {
+            if (questData?.questSteps == null
+                || stepIndex < 0
+                || stepIndex >= questData.questSteps.Count)
+            {
+                return;
+            }
+
+            var step = questData.questSteps[stepIndex];
+            Process_QuestActions(
+                step?.actions_OnEnter,
+                new QuestActionContext(
+                    questId,
+                    questData,
+                    this,
+                    QuestActionTrigger.Entered,
+                    stepIndex));
+        }
+
+        QuestSO ResolveQuestSO(string questId)
+        {
+            if (QuestStatusDict != null
+                && QuestStatusDict.TryGetValue(questId, out var status)
+                && status?.QuestSO != null)
+            {
+                return status.QuestSO;
+            }
+
+            return QuestDatabase?.GetQuest(questId);
+        }
+
         void QuestCompletedHandler(string questId)
         {
             if (ActiveQuests == null || !ActiveQuests.ContainsKey(questId))
                 return;
+
+            QuestSO questData = ResolveQuestSO(questId);
 
             if (trackedQuest == questId)
                 UntrackQuest();
@@ -296,6 +363,9 @@ namespace RAXY.Quest
 
             Debug.Log($"[QuestManager] Quest '{questId}' completed.");
             OnQuestCompleted?.Invoke(questId);
+            Process_QuestActions(
+                questData?.actions_OnCompleted,
+                new QuestActionContext(questId, questData, this, QuestActionTrigger.Completed));
             RefreshQuestObjects();
         }
 
