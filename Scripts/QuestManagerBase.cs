@@ -66,6 +66,13 @@ namespace RAXY.Quest
                 questObjects.Add(qo);
             }
 
+            var allBindings = FindObjectsByType<QuestBindingBase>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None);
+
+            foreach (var binding in allBindings)
+                binding.Set_QuestManager(this);
+
             RefreshQuestObjects();
         }
 
