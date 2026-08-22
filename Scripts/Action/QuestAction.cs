@@ -8,6 +8,7 @@ namespace RAXY.Quest
     {
         Taken,
         Entered,
+        StepCompleted,
         Completed
     }
 

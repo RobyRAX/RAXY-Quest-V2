@@ -37,6 +37,7 @@ namespace RAXY.Quest
                 : null;
 
         public event Action<int> OnStepChanged;
+        public event Action<int> OnStepCompleted;
         public event Action<QuestStepObjective_Runtime> OnObjectiveProgressed;
         public event Action<QuestStepObjective_Runtime> OnObjectiveCompleted;
         public event Action OnQuestCompleted;
@@ -109,7 +110,10 @@ namespace RAXY.Quest
 
         void StepCompletedHandler()
         {
-            int nextIndex = CurrentQuestStepIndex + 1;
+            int completedIndex = CurrentQuestStepIndex;
+            OnStepCompleted?.Invoke(completedIndex);
+
+            int nextIndex = completedIndex + 1;
             if (nextIndex < QuestSteps_Runtime.Count)
             {
                 ActivateStep(nextIndex);

@@ -202,6 +202,10 @@ namespace RAXY.Quest
                 Process_StepEnterActions(questId, questData, stepIndex);
                 RefreshQuestObjects();
             };
+            questRuntime.OnStepCompleted += stepIndex =>
+            {
+                Process_StepCompleteActions(questId, questData, stepIndex);
+            };
             questRuntime.OnObjectiveProgressed += objective =>
             {
                 OnObjectiveProgressed?.Invoke(objective);
@@ -338,6 +342,26 @@ namespace RAXY.Quest
                     questData,
                     this,
                     QuestActionTrigger.Entered,
+                    stepIndex));
+        }
+
+        void Process_StepCompleteActions(string questId, QuestSO questData, int stepIndex)
+        {
+            if (questData?.questSteps == null
+                || stepIndex < 0
+                || stepIndex >= questData.questSteps.Count)
+            {
+                return;
+            }
+
+            var step = questData.questSteps[stepIndex];
+            Process_QuestActions(
+                step?.actions_OnComplete,
+                new QuestActionContext(
+                    questId,
+                    questData,
+                    this,
+                    QuestActionTrigger.StepCompleted,
                     stepIndex));
         }
 
