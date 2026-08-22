@@ -20,6 +20,10 @@ namespace RAXY.Quest
         [TitleGroup("Quest Type")]
         public QuestType questType = QuestType.Main;
 
+        [TitleGroup("Quest Type")]
+        [LabelText("Auto Complete After Steps")]
+        public bool autoComplete = true;
+
         [TitleGroup("Quest Name")]
         [HideLabel]
         [HideReferenceObjectPicker]

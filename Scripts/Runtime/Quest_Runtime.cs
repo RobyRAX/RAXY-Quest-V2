@@ -116,6 +116,13 @@ namespace RAXY.Quest
                 return;
             }
 
+            if (QuestData != null && !QuestData.autoComplete)
+            {
+                Deactivate();
+                CurrentQuestStepIndex = AllStepsCompletedIndex;
+                return;
+            }
+
             CompleteQuest();
         }
 
