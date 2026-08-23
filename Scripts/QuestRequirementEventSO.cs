@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using RAXY.Event;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -24,9 +25,11 @@ namespace RAXY.Quest
         }
     }
 
+    [Serializable]
     public struct QuestRequirementParameter
     {
         public float floatParam;
         public bool boolParam;
+        public List<string> listStringParam;
     }
 }

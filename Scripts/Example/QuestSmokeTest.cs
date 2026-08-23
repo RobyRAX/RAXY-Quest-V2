@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -49,6 +50,10 @@ namespace RAXY.Quest
         bool requirementBoolValue;
 
         [TitleGroup("Requirement Test")]
+        [SerializeField]
+        List<string> requirementListStringValue = new();
+
+        [TitleGroup("Requirement Test")]
         [Button]
         void RaiseRequirementEvent()
         {
@@ -61,10 +66,11 @@ namespace RAXY.Quest
             requirementEventSO.Raise(new QuestRequirementParameter
             {
                 floatParam = requirementFloatValue,
-                boolParam = requirementBoolValue
+                boolParam = requirementBoolValue,
+                listStringParam = requirementListStringValue
             });
 
-            Debug.Log($"[QuestSmokeTest] Raised requirement event (float={requirementFloatValue}, bool={requirementBoolValue}).");
+            Debug.Log($"[QuestSmokeTest] Raised requirement event (float={requirementFloatValue}, bool={requirementBoolValue}, listString=[{string.Join(", ", requirementListStringValue ?? new List<string>())}]).");
         }
     }
 }

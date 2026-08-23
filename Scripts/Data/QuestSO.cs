@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using RAXY.Utility.Localization;
-using Sirenix.Utilities.Editor;
 using Cysharp.Threading.Tasks;
 using System;
 
@@ -58,7 +57,7 @@ namespace RAXY.Quest
 #if UNITY_EDITOR
         void DrawRefresh_Btn()
         {
-            if (SirenixEditorGUI.ToolbarButton(EditorIcons.Refresh))
+            if (Sirenix.Utilities.Editor.SirenixEditorGUI.ToolbarButton(Sirenix.Utilities.Editor.EditorIcons.Refresh))
             {
                 foreach (var step in questSteps)
                 {
@@ -85,5 +84,6 @@ namespace RAXY.Quest
         public QuestRequirementEventSO requirementEventSO;
         public float requiredFloat;
         public bool requiredBool;
+        public List<string> requiredListString;
     }
 }

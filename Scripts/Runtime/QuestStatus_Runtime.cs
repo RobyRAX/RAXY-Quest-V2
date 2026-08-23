@@ -52,7 +52,8 @@ namespace RAXY.Quest
                 }
 
                 if (current.floatParam < entry.requiredFloat ||
-                    current.boolParam != entry.requiredBool)
+                    current.boolParam != entry.requiredBool ||
+                    !MeetsListRequirement(current.listStringParam, entry.requiredListString))
                 {
                     CompletionState = QuestCompletionState.NotStarted;
                     return;
@@ -70,6 +71,27 @@ namespace RAXY.Quest
         public void SetCompleted()
         {
             CompletionState = QuestCompletionState.Completed;
+        }
+
+        static bool MeetsListRequirement(List<string> current, List<string> required)
+        {
+            if (required == null || required.Count == 0)
+                return true;
+
+            if (current == null || current.Count == 0)
+                return false;
+
+            for (int i = 0; i < required.Count; i++)
+            {
+                var requiredItem = required[i];
+                if (string.IsNullOrEmpty(requiredItem))
+                    continue;
+
+                if (!current.Contains(requiredItem))
+                    return false;
+            }
+
+            return true;
         }
 
         static bool HasRequirements(QuestSO questSO)

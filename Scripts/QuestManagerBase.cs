@@ -286,6 +286,7 @@ namespace RAXY.Quest
                 status.SetCompleted();
 
             OnQuestCompleted?.Invoke(questId);
+            OnQuestCompletedCallback(questId);
             Process_QuestActions(
                 questData?.actions_OnCompleted,
                 new QuestActionContext(questId, questData, this, QuestActionTrigger.Completed));
@@ -377,7 +378,7 @@ namespace RAXY.Quest
             return QuestDatabase?.GetQuest(questId);
         }
 
-        void QuestCompletedHandler(string questId)
+        protected void QuestCompletedHandler(string questId)
         {
             if (ActiveQuests == null || !ActiveQuests.ContainsKey(questId))
                 return;
@@ -394,10 +395,15 @@ namespace RAXY.Quest
 
             Debug.Log($"[QuestManager] Quest '{questId}' completed.");
             OnQuestCompleted?.Invoke(questId);
+            OnQuestCompletedCallback(questId);
             Process_QuestActions(
                 questData?.actions_OnCompleted,
                 new QuestActionContext(questId, questData, this, QuestActionTrigger.Completed));
             RefreshQuestObjects();
+        }
+
+        protected virtual void OnQuestCompletedCallback(string questId)
+        {
         }
 
         void SubscribeAllRequirements()
