@@ -4,13 +4,53 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace RAXY.Quest
 {
     public class QuestObject : MonoBehaviour
     {
+#if UNITY_EDITOR
+        void OnValidate()
+        {
+            if (toggleConditions == null)
+                return;
+
+            for (int i = 0; i < toggleConditions.Count; i++)
+            {
+                var condition = toggleConditions[i];
+                if (condition == null)
+                    continue;
+
+                condition.EditorDb = QuestDatabase;
+                condition.SyncStepsFromQuest();
+            }
+        }
+
         [TitleGroup("Editor Data")]
         [SerializeField]
         Object editor_QuestDb;
+
+        [TitleGroup("Editor Data")]
+        [Button]
+        void Find_QuestDatabaseSO()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:ScriptableObject");
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                ScriptableObject so = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                if (so is IQuestDatabase)
+                {
+                    editor_QuestDb = so;
+                    return;
+                }
+            }
+
+            editor_QuestDb = null;
+        }
 
         IQuestDatabase QuestDatabase
         {
@@ -25,6 +65,7 @@ namespace RAXY.Quest
                 return null;
             }
         }
+#endif
 
         [TitleGroup("Settings")]
         public bool defaultVisibilityState;
@@ -104,24 +145,6 @@ namespace RAXY.Quest
         void OnManagerQuestStepChanged(string _, int __) => Refresh();
 
         void OnManagerObjectiveChanged(QuestStepObjective_Runtime _) => Refresh();
-
-#if UNITY_EDITOR
-        void OnValidate()
-        {
-            if (toggleConditions == null)
-                return;
-
-            for (int i = 0; i < toggleConditions.Count; i++)
-            {
-                var condition = toggleConditions[i];
-                if (condition == null)
-                    continue;
-
-                condition.EditorDb = QuestDatabase;
-                condition.SyncStepsFromQuest();
-            }
-        }
-#endif
     }
 
     [Serializable]

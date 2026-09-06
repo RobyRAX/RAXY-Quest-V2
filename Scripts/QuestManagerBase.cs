@@ -9,6 +9,8 @@ namespace RAXY.Quest
 {
     public abstract class QuestManagerBase : MonoBehaviour
     {
+        public static QuestManagerBase BaseInstance { get; set; }
+
         public event Action<string> OnQuestTaken;
         public event Action<string> OnQuestCompleted;
         public event Action<string, int> OnQuestStepChanged;
