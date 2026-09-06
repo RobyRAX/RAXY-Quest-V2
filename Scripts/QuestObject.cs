@@ -89,7 +89,8 @@ namespace RAXY.Quest
         [Button]
         public void Refresh()
         {
-            if (questManager == null)
+            // Unity fake-null: destroyed objects can still receive manager events until OnDestroy unsubscribes.
+            if (this == null || questManager == null)
                 return;
 
             bool flip = false;
@@ -114,6 +115,7 @@ namespace RAXY.Quest
         void OnDestroy()
         {
             UnsubscribeManagerEvents();
+            questManager = null;
         }
 
         void SubscribeManagerEvents()
