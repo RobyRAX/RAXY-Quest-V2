@@ -1,0 +1,19 @@
+{
+    "name": "RAXY.Quest.Editor",
+    "rootNamespace": "RAXY.Quest.Editor",
+    "references": [
+        "RAXY.Quest",
+        "RAXY.Utility.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
