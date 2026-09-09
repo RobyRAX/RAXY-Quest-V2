@@ -37,7 +37,6 @@ namespace RAXY.Quest.Editor
 
         void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            // Stale MonoBehaviour reference after exiting play mode.
             if (state == PlayModeStateChange.EnteredEditMode)
                 QuestManagerBase.BaseInstance = null;
 
@@ -53,16 +52,15 @@ namespace RAXY.Quest.Editor
             using (new EditorGUILayout.VerticalScope(GUILayout.ExpandHeight(true)))
             {
                 DrawManagerSection();
-                EditorGUILayout.Space(8f);
+                EditorGUILayout.Space(10f);
                 DrawToolbar();
-                EditorGUILayout.Space(4f);
+                EditorGUILayout.Space(6f);
                 DrawQuestList();
             }
         }
 
         void DrawManagerSection()
         {
-            // Clear destroyed play-mode refs that still sit in the static field.
             if (!ReferenceEquals(QuestManagerBase.BaseInstance, null) &&
                 QuestManagerBase.BaseInstance == null)
             {
@@ -74,43 +72,42 @@ namespace RAXY.Quest.Editor
 
             if (hasManager)
             {
-                EditorGUILayout.HelpBox(
-                    $"Runtime mode — linked to '{manager.name}' ({manager.GetType().Name}).",
-                    MessageType.Info);
+                RaxyHubGui.DrawStatusBanner(
+                    true,
+                    "Runtime connected",
+                    $"Linked to '{manager.name}' ({manager.GetType().Name}).");
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    if (GUILayout.Button("Find Quest Manager Instance", GUILayout.Height(22f)))
+                    if (RaxyHubGui.PrimaryButton("Find Quest Manager Instance"))
                         FindQuestManagerInstance();
 
-                    if (GUILayout.Button("Clear Reference", GUILayout.Width(120f), GUILayout.Height(22f)))
+                    if (RaxyHubGui.SecondaryButton("Clear", 80f))
                         QuestManagerBase.BaseInstance = null;
                 }
 
+                EditorGUILayout.Space(4f);
                 EditorGUILayout.ObjectField("Instance", manager, typeof(QuestManagerBase), true);
             }
             else
             {
-                EditorGUILayout.HelpBox(
-                    "Editor mode — QuestManagerBase.BaseInstance is not set.\n" +
-                    "Enter Play Mode (with QuestManager in the scene), then Find Instance to enable Take/Complete.",
-                    MessageType.Warning);
+                RaxyHubGui.DrawStatusBanner(
+                    false,
+                    "Editor mode — manager not linked",
+                    "Enter Play Mode with a QuestManager in the scene, then Find Instance to enable Take/Complete.");
 
-                if (GUILayout.Button("Find Quest Manager Instance", GUILayout.Height(24f)))
+                if (RaxyHubGui.PrimaryButton("Find Quest Manager Instance"))
                     FindQuestManagerInstance();
             }
         }
 
         void DrawToolbar()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                _filter = EditorGUILayout.TextField("Filter", _filter);
-                if (GUILayout.Button("Refresh List", GUILayout.Width(100f)))
-                    RefreshQuestList();
-            }
+            _filter = RaxyHubGui.DrawToolbarRow(_filter, out bool refresh);
+            if (refresh)
+                RefreshQuestList();
 
-            EditorGUILayout.LabelField($"Quests: {_entries.Count}", EditorStyles.miniLabel);
+            RaxyHubGui.DrawCountChip($"{_entries.Count} quests");
         }
 
         void DrawQuestList()
@@ -138,6 +135,9 @@ namespace RAXY.Quest.Editor
             }
 
             EditorGUILayout.EndScrollView();
+
+            if (!hasManager)
+                RaxyHubGui.DrawHint("Take / Complete disabled until a Quest Manager is linked.");
         }
 
         bool PassesFilter(QuestEntry entry)
@@ -156,45 +156,33 @@ namespace RAXY.Quest.Editor
             var quest = entry.Quest;
             string questId = quest.QuestId;
 
-            using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+            RaxyHubGui.BeginCard();
+            RaxyHubGui.DrawTitleRow(
+                questId,
+                quest.questType.ToString(),
+                hasManager ? GetStatusLabel(questId) : null);
+            RaxyHubGui.DrawMutedPath(entry.FolderPath);
+
+            EditorGUILayout.Space(4f);
+            using (new EditorGUILayout.HorizontalScope())
             {
-                using (new EditorGUILayout.HorizontalScope())
+                if (RaxyHubGui.SecondaryButton("Ping", 56f))
                 {
-                    EditorGUILayout.LabelField(questId, EditorStyles.boldLabel);
-                    GUILayout.FlexibleSpace();
-                    EditorGUILayout.LabelField(quest.questType.ToString(), EditorStyles.miniLabel, GUILayout.Width(48f));
-
-                    if (hasManager)
-                        EditorGUILayout.LabelField(GetStatusLabel(questId), EditorStyles.miniLabel, GUILayout.Width(90f));
+                    EditorGUIUtility.PingObject(quest);
+                    Selection.activeObject = quest;
                 }
 
-                EditorGUILayout.LabelField("Folder", entry.FolderPath, EditorStyles.miniLabel);
-
-                using (new EditorGUILayout.HorizontalScope())
+                using (new EditorGUI.DisabledScope(!hasManager))
                 {
-                    if (GUILayout.Button("Ping", GUILayout.Width(50f)))
-                    {
-                        EditorGUIUtility.PingObject(quest);
-                        Selection.activeObject = quest;
-                    }
+                    if (RaxyHubGui.PrimaryButton("Take Quest"))
+                        TakeQuest(questId);
 
-                    using (new EditorGUI.DisabledScope(!hasManager))
-                    {
-                        if (GUILayout.Button("Take Quest"))
-                            TakeQuest(questId);
-
-                        if (GUILayout.Button("Complete Quest"))
-                            CompleteQuest(questId);
-                    }
-                }
-
-                if (!hasManager)
-                {
-                    EditorGUILayout.LabelField(
-                        "Take / Complete disabled — Find Quest Manager Instance first.",
-                        EditorStyles.centeredGreyMiniLabel);
+                    if (RaxyHubGui.PrimaryButton("Complete Quest"))
+                        CompleteQuest(questId);
                 }
             }
+
+            RaxyHubGui.EndCard();
         }
 
         string GetStatusLabel(string questId)
