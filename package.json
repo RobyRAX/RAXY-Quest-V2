@@ -1,6 +1,6 @@
 {
   "name": "com.raxy.quest2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "RAXY Quest 2",
   "description": "Event-driven quest system with step/objective runtime tracking.",
   "author": {
@@ -11,5 +11,12 @@
     "com.raxy.event": "1.0.0",
     "com.raxy.utility.localization": "1.0.0",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Basic Setup",
+      "description": "Quest manager, two demo quests, objective/requirement EventSOs, smoke test, and minimal tracker UI.",
+      "path": "Samples~/Basic Setup"
+    }
+  ]
 }
