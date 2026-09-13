@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace RAXY.Quest
 {
-    [CreateAssetMenu(fileName = "QuestStepObjectiveEventSO", menuName = "RAXY/Quest/QuestStepObjectiveEventSO")]
+    [CreateAssetMenu(fileName = "Quest Step Objective Event SO", menuName = "RAXY/Quest/Quest Step Objective Event SO")]
     public class QuestStepObjectiveEventSO : EventSO<ObjectiveParameter>, IQuestStepObjectiveParameterProvider
     {
         [TitleGroup("Objective")]

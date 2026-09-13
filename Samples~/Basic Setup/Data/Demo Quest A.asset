@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d118c3cdb53262d478b2a2b661080d5a, type: 3}
   m_Name: Demo Quest A
   m_EditorClassIdentifier: RAXY.Quest::RAXY.Quest.QuestSO
-  questType: 0
+  questType: Main
   autoComplete: 1
   questNameProvider:
     useLocalization: 0

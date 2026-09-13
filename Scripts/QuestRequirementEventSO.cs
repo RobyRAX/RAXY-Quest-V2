@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace RAXY.Quest
 {
-    [CreateAssetMenu(fileName = "QuestRequirementEventSO", menuName = "RAXY/Quest/QuestRequirementEventSO")]
+    [CreateAssetMenu(fileName = "Quest Requirement Event SO", menuName = "RAXY/Quest/Quest Requirement Event SO")]
     public class QuestRequirementEventSO : EventSO<QuestRequirementParameter>
     {
         [TitleGroup("Quest Requirement Setting")]

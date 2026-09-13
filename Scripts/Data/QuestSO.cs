@@ -4,20 +4,25 @@ using UnityEngine;
 using RAXY.Utility.Localization;
 using Cysharp.Threading.Tasks;
 using System;
+using UnityEngine.Serialization;
+
+#if UNITY_EDITOR
+using System.Collections;
+#endif
 
 namespace RAXY.Quest
 {
-    public enum QuestType
-    {
-        Main,
-        Side
-    }
-
-    [CreateAssetMenu(fileName = "QuestSO", menuName = "RAXY/Quest/QuestSO")]
+    [CreateAssetMenu(fileName = "Quest SO", menuName = "RAXY/Quest/Quest SO")]
     public class QuestSO : ScriptableObject
     {
+        const int LegacyQuestTypeUnset = -1;
+
         [TitleGroup("Quest Type")]
-        public QuestType questType = QuestType.Main;
+        [ValueDropdown("GetQuestTypeOptions")]
+        public string questType = QuestTypeIds.Main;
+
+        [SerializeField, HideInInspector, FormerlySerializedAs("questType")]
+        int legacyQuestType = LegacyQuestTypeUnset;
 
         [TitleGroup("Quest Type")]
         [LabelText("Auto Complete After Steps")]
@@ -32,8 +37,8 @@ namespace RAXY.Quest
         public List<QuestRequirementEntry> questRequirements;
 
         [TitleGroup("Quest Step")]
-        [ListDrawerSettings(ShowIndexLabels = true, 
-                            ListElementLabelName = "StepName", 
+        [ListDrawerSettings(ShowIndexLabels = true,
+                            ListElementLabelName = "StepName",
                             Expanded = true,
                             OnTitleBarGUI = "DrawRefresh_Btn")]
         [HideReferenceObjectPicker]
@@ -54,7 +59,36 @@ namespace RAXY.Quest
         public string QuestId => name;
         public string QuestName => questNameProvider.String;
 
+        void OnEnable()
+        {
+            MigrateLegacyQuestType();
+        }
+
+        void MigrateLegacyQuestType()
+        {
+            if (legacyQuestType < 0)
+                return;
+
+            questType = legacyQuestType switch
+            {
+                0 => QuestTypeIds.Main,
+                1 => "Side",
+                _ => QuestTypeIds.Main
+            };
+
+            legacyQuestType = LegacyQuestTypeUnset;
+
 #if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
+        }
+
+#if UNITY_EDITOR
+        IEnumerable GetQuestTypeOptions()
+        {
+            return QuestTypeEditorBridge.GetTypes();
+        }
+
         void DrawRefresh_Btn()
         {
             if (Sirenix.Utilities.Editor.SirenixEditorGUI.ToolbarButton(Sirenix.Utilities.Editor.EditorIcons.Refresh))

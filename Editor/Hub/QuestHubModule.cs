@@ -19,6 +19,7 @@ namespace RAXY.Quest.Editor
         readonly List<QuestEntry> _entries = new();
         Vector2 _scroll;
         string _filter = "";
+        string _newTypeDraft = "";
 
         public string Id => "quest";
         public string DisplayName => "Quest";
@@ -27,6 +28,7 @@ namespace RAXY.Quest.Editor
         public void OnEnable()
         {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            QuestEditorSettings.instance.EnsureMainLocked();
             RefreshQuestList();
         }
 
@@ -53,6 +55,8 @@ namespace RAXY.Quest.Editor
             {
                 _scroll = EditorGUILayout.BeginScrollView(_scroll, GUILayout.ExpandHeight(true));
                 DrawManagerSection();
+                EditorGUILayout.Space(10f);
+                DrawQuestTypesSection();
                 EditorGUILayout.Space(10f);
                 DrawToolbar();
                 EditorGUILayout.Space(6f);
@@ -103,6 +107,122 @@ namespace RAXY.Quest.Editor
             }
         }
 
+        void DrawQuestTypesSection()
+        {
+            var settings = QuestEditorSettings.instance;
+            settings.EnsureMainLocked();
+            var types = settings.MutableQuestTypes;
+
+            RaxyHubGui.BeginCard();
+            EditorGUILayout.LabelField("Quest Types", EditorStyles.boldLabel);
+            RaxyHubGui.DrawHint("Main is a built-in type and cannot be renamed or removed.");
+
+            EditorGUILayout.Space(4f);
+
+            EditorGUI.BeginChangeCheck();
+
+            // Locked Main row
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                using (new EditorGUI.DisabledScope(true))
+                {
+                    EditorGUILayout.TextField(QuestTypeIds.Main);
+                }
+
+                using (new EditorGUI.DisabledScope(true))
+                {
+                    GUILayout.Button("Remove", GUILayout.Width(70f));
+                }
+            }
+
+            for (int i = 1; i < types.Count; i++)
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    string edited = EditorGUILayout.TextField(types[i] ?? string.Empty);
+                    if (!string.Equals(edited, types[i], StringComparison.Ordinal))
+                    {
+                        // Prevent renaming into Main or empty duplicate of Main.
+                        if (string.Equals(edited.Trim(), QuestTypeIds.Main, StringComparison.Ordinal))
+                        {
+                            Debug.LogWarning("[RAXY Hub / Quest] Cannot use reserved type name 'Main'.");
+                        }
+                        else
+                        {
+                            types[i] = edited;
+                        }
+                    }
+
+                    if (GUILayout.Button("Remove", GUILayout.Width(70f)))
+                    {
+                        types.RemoveAt(i);
+                        i--;
+                        GUI.FocusControl(null);
+                    }
+                }
+            }
+
+            EditorGUILayout.Space(4f);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                _newTypeDraft = EditorGUILayout.TextField(_newTypeDraft);
+                using (new EditorGUI.DisabledScope(string.IsNullOrWhiteSpace(_newTypeDraft)))
+                {
+                    if (GUILayout.Button("Add", GUILayout.Width(70f)))
+                    {
+                        string candidate = _newTypeDraft.Trim();
+                        if (string.Equals(candidate, QuestTypeIds.Main, StringComparison.Ordinal))
+                        {
+                            Debug.LogWarning("[RAXY Hub / Quest] Cannot add reserved type name 'Main'.");
+                        }
+                        else if (types.Exists(t =>
+                                     string.Equals(t, candidate, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            Debug.LogWarning($"[RAXY Hub / Quest] Quest type '{candidate}' already exists.");
+                        }
+                        else
+                        {
+                            types.Add(candidate);
+                            _newTypeDraft = "";
+                            GUI.FocusControl(null);
+                        }
+                    }
+                }
+            }
+
+            EditorGUILayout.Space(8f);
+            settings.GeneratedScriptPath = EditorGUILayout.TextField(
+                "Generated Script Path",
+                settings.GeneratedScriptPath);
+            settings.GeneratedNamespace = EditorGUILayout.TextField(
+                "Generated Namespace",
+                settings.GeneratedNamespace);
+
+            EditorGUILayout.Space(4f);
+            if (RaxyHubGui.PrimaryButton("Generate C# Script"))
+            {
+                settings.EnsureMainLocked();
+                settings.SaveSettings();
+
+                if (QuestTypesCodeGenerator.TryGenerate(out string absolutePath, out string error))
+                {
+                    Debug.Log($"[RAXY Hub / Quest] Generated QuestTypes at '{absolutePath}'.");
+                }
+                else
+                {
+                    Debug.LogError($"[RAXY Hub / Quest] Generate failed: {error}");
+                }
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                settings.EnsureMainLocked();
+                settings.SaveSettings();
+            }
+
+            RaxyHubGui.EndCard();
+        }
+
         void DrawToolbar()
         {
             _filter = RaxyHubGui.DrawToolbarRow(_filter, out bool refresh);
@@ -145,20 +265,24 @@ namespace RAXY.Quest.Editor
                 return true;
 
             string q = _filter.Trim();
+            string questType = entry.Quest.questType ?? string.Empty;
             return entry.Quest.QuestId.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0
                    || entry.FolderPath.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0
-                   || entry.Quest.questType.ToString().IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0;
+                   || questType.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         void DrawQuestRow(QuestEntry entry, bool hasManager)
         {
             var quest = entry.Quest;
             string questId = quest.QuestId;
+            string questType = string.IsNullOrEmpty(quest.questType)
+                ? QuestTypeIds.Main
+                : quest.questType;
 
             RaxyHubGui.BeginCard();
             RaxyHubGui.DrawTitleRow(
                 questId,
-                quest.questType.ToString(),
+                questType,
                 hasManager ? GetStatusLabel(questId) : null);
             RaxyHubGui.DrawMutedPath(entry.FolderPath);
 
