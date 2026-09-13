@@ -7,17 +7,15 @@ using UnityEngine;
 namespace RAXY.Quest
 {
     [Serializable]
-    public class TakeQuest : QuestAction
+    public class TakeQuest : IQuestAction
     {
         [HideLabel]
         public QuestSO questToTake;
 
-        public override string Label =>
+        public string Label =>
             questToTake != null ? $"TakeQuest ({questToTake.QuestId})" : "TakeQuest";
 
-        public override UniTask ExecuteAsync(
-            QuestActionContext ctx,
-            CancellationToken ct = default)
+        public UniTask ExecuteAsync(CancellationToken ct = default)
         {
             if (questToTake == null)
             {
@@ -25,13 +23,13 @@ namespace RAXY.Quest
                 return UniTask.CompletedTask;
             }
 
-            if (ctx.Manager == null)
+            if (QuestManagerBase.BaseInstance == null)
             {
-                Debug.LogWarning("[TakeQuest] QuestManager is null.");
+                Debug.LogWarning("[TakeQuest] QuestManager BaseInstance is null.");
                 return UniTask.CompletedTask;
             }
 
-            ctx.Manager.TakeQuest(questToTake.QuestId);
+            QuestManagerBase.BaseInstance.TakeQuest(questToTake.QuestId);
             return UniTask.CompletedTask;
         }
     }

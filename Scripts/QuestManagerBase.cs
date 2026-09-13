@@ -224,9 +224,7 @@ namespace RAXY.Quest
 
             Debug.Log($"[QuestManager] Quest '{questId}' started.");
             OnQuestTaken?.Invoke(questId);
-            Process_QuestActions(
-                questData.actions_OnTaken,
-                new QuestActionContext(questId, questData, this, QuestActionTrigger.Taken));
+            Process_QuestActions(questData.actions_OnTaken);
 
             if (questRuntime.QuestSteps_Runtime.Count > 0)
                 questRuntime.ActivateStep(0);
@@ -289,9 +287,7 @@ namespace RAXY.Quest
 
             OnQuestCompleted?.Invoke(questId);
             OnQuestCompletedCallback(questId);
-            Process_QuestActions(
-                questData?.actions_OnCompleted,
-                new QuestActionContext(questId, questData, this, QuestActionTrigger.Completed));
+            Process_QuestActions(questData?.actions_OnCompleted);
             RefreshQuestObjects();
         }
 
@@ -308,8 +304,7 @@ namespace RAXY.Quest
         }
 
         public async UniTask Process_QuestActionsAsync(
-            List<QuestAction> actions,
-            QuestActionContext ctx,
+            List<IQuestAction> actions,
             CancellationToken ct = default)
         {
             if (actions == null)
@@ -321,12 +316,12 @@ namespace RAXY.Quest
                 if (action == null)
                     continue;
 
-                await action.ExecuteAsync(ctx, ct);
+                await action.ExecuteAsync(ct);
             }
         }
 
-        void Process_QuestActions(List<QuestAction> actions, QuestActionContext ctx)
-            => Process_QuestActionsAsync(actions, ctx).Forget();
+        void Process_QuestActions(List<IQuestAction> actions)
+            => Process_QuestActionsAsync(actions).Forget();
 
         void Process_StepEnterActions(string questId, QuestSO questData, int stepIndex)
         {
@@ -338,14 +333,7 @@ namespace RAXY.Quest
             }
 
             var step = questData.questSteps[stepIndex];
-            Process_QuestActions(
-                step?.actions_OnEnter,
-                new QuestActionContext(
-                    questId,
-                    questData,
-                    this,
-                    QuestActionTrigger.Entered,
-                    stepIndex));
+            Process_QuestActions(step?.actions_OnEnter);
         }
 
         void Process_StepCompleteActions(string questId, QuestSO questData, int stepIndex)
@@ -358,14 +346,7 @@ namespace RAXY.Quest
             }
 
             var step = questData.questSteps[stepIndex];
-            Process_QuestActions(
-                step?.actions_OnComplete,
-                new QuestActionContext(
-                    questId,
-                    questData,
-                    this,
-                    QuestActionTrigger.StepCompleted,
-                    stepIndex));
+            Process_QuestActions(step?.actions_OnComplete);
         }
 
         QuestSO ResolveQuestSO(string questId)
@@ -398,9 +379,7 @@ namespace RAXY.Quest
             Debug.Log($"[QuestManager] Quest '{questId}' completed.");
             OnQuestCompleted?.Invoke(questId);
             OnQuestCompletedCallback(questId);
-            Process_QuestActions(
-                questData?.actions_OnCompleted,
-                new QuestActionContext(questId, questData, this, QuestActionTrigger.Completed));
+            Process_QuestActions(questData?.actions_OnCompleted);
             RefreshQuestObjects();
         }
 

@@ -17,7 +17,7 @@ namespace RAXY.Quest.Editor
         }
 
         readonly List<QuestEntry> _entries = new();
-        Vector2 _listScroll;
+        Vector2 _scroll;
         string _filter = "";
 
         public string Id => "quest";
@@ -51,11 +51,13 @@ namespace RAXY.Quest.Editor
         {
             using (new EditorGUILayout.VerticalScope(GUILayout.ExpandHeight(true)))
             {
+                _scroll = EditorGUILayout.BeginScrollView(_scroll, GUILayout.ExpandHeight(true));
                 DrawManagerSection();
                 EditorGUILayout.Space(10f);
                 DrawToolbar();
                 EditorGUILayout.Space(6f);
                 DrawQuestList();
+                EditorGUILayout.EndScrollView();
             }
         }
 
@@ -121,7 +123,6 @@ namespace RAXY.Quest.Editor
             }
 
             bool hasManager = QuestManagerBase.BaseInstance != null;
-            _listScroll = EditorGUILayout.BeginScrollView(_listScroll, GUILayout.ExpandHeight(true));
 
             foreach (var entry in _entries)
             {
@@ -133,8 +134,6 @@ namespace RAXY.Quest.Editor
 
                 DrawQuestRow(entry, hasManager);
             }
-
-            EditorGUILayout.EndScrollView();
 
             if (!hasManager)
                 RaxyHubGui.DrawHint("Take / Complete disabled until a Quest Manager is linked.");

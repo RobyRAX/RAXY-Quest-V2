@@ -7,15 +7,15 @@ using Sirenix.OdinInspector;
 namespace RAXY.Quest
 {
     [Serializable]
-    public class TriggerEventSO : QuestAction
+    public class TriggerEventSO : IQuestAction
     {
         [HideLabel]
         [HideReferenceObjectPicker]
         public EventSoRaiser eventRaiser;
 
-        public override UniTask ExecuteAsync(
-            QuestActionContext ctx,
-            CancellationToken ct = default)
+        public string Label => "TriggerEventSO";
+
+        public UniTask ExecuteAsync(CancellationToken ct = default)
         {
             eventRaiser?.Raise();
             return UniTask.CompletedTask;

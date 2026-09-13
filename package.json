@@ -1,6 +1,6 @@
 {
   "name": "com.raxy.quest2",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "displayName": "RAXY Quest 2",
   "description": "Event-driven quest system with step/objective runtime tracking.",
   "author": {

@@ -7,37 +7,38 @@ using UnityEngine;
 namespace RAXY.Quest
 {
     [Serializable]
-    public class CompleteQuest : QuestAction
+    public class CompleteQuest : IQuestAction
     {
         [HideLabel]
         public QuestSO questToComplete;
 
-        public override string Label =>
+        public string Label =>
             questToComplete != null
                 ? $"CompleteQuest ({questToComplete.QuestId})"
-                : "CompleteQuest (Context)";
+                : "CompleteQuest";
 
-        public override UniTask ExecuteAsync(
-            QuestActionContext ctx,
-            CancellationToken ct = default)
+        public UniTask ExecuteAsync(CancellationToken ct = default)
         {
-            string questId = questToComplete != null
-                ? questToComplete.QuestId
-                : ctx.QuestId;
+            if (questToComplete == null)
+            {
+                Debug.LogWarning("[CompleteQuest] questToComplete is not set.");
+                return UniTask.CompletedTask;
+            }
 
+            string questId = questToComplete.QuestId;
             if (string.IsNullOrEmpty(questId))
             {
                 Debug.LogWarning("[CompleteQuest] QuestId is empty.");
                 return UniTask.CompletedTask;
             }
 
-            if (ctx.Manager == null)
+            if (QuestManagerBase.BaseInstance == null)
             {
-                Debug.LogWarning("[CompleteQuest] QuestManager is null.");
+                Debug.LogWarning("[CompleteQuest] QuestManager BaseInstance is null.");
                 return UniTask.CompletedTask;
             }
 
-            ctx.Manager.CompleteQuest(questId);
+            QuestManagerBase.BaseInstance.CompleteQuest(questId);
             return UniTask.CompletedTask;
         }
     }
