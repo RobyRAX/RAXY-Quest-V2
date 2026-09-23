@@ -23,7 +23,9 @@ namespace RAXY.Quest
         }
 
         [TitleGroup("Settings")]
+#if UNITY_EDITOR
         [ValueDropdown(nameof(EditorQuestIds), AppendNextDrawer = true)]
+#endif
         public string questId;
 
 #if UNITY_EDITOR
