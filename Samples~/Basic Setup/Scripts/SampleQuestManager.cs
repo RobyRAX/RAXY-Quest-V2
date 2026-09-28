@@ -24,6 +24,8 @@ public class SampleQuestManager : QuestManagerBase
 
         if (questDatabase != null)
             SetQuestDatabase(questDatabase);
+        
+        BaseInstance = this;
 
         InitQuestManager();
     }
