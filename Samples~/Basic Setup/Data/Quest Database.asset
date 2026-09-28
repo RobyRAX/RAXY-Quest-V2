@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d723d5dc65e7afc41a24b59d489c5e9b, type: 3}
   m_Name: Quest Database
-  m_EditorClassIdentifier: RAXY.Quest::RAXY.Quest.QuestDatabaseExampleSO
+  m_EditorClassIdentifier: Assembly-CSharp::SampleQuestDatabaseSO
   quests:
   - {fileID: 11400000, guid: d1a2b3c4d5e6f708192a3b4c5d6e7f93, type: 2}
   - {fileID: 11400000, guid: d1a2b3c4d5e6f708192a3b4c5d6e7f94, type: 2}

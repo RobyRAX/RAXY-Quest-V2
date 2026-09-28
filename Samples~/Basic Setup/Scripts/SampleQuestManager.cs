@@ -4,13 +4,29 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 /// <summary>
-/// Sample manager: raises a quest-completed requirement event so chained quests can unlock.
+/// Sample manager: loads the sample database, then raises a quest-completed
+/// requirement event so chained quests can unlock.
 /// </summary>
-public class SampleQuestManager : QuestManagerExample
+public class SampleQuestManager : QuestManagerBase
 {
+    [TitleGroup("Quest Database")]
+    [SerializeField]
+    [PropertyOrder(-1)]
+    SampleQuestDatabaseSO questDatabase;
+
     [TitleGroup("Sample Wiring")]
     [SerializeField]
     QuestRequirementEventSO questCompleteRequirementSO;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if (questDatabase != null)
+            SetQuestDatabase(questDatabase);
+
+        InitQuestManager();
+    }
 
     protected override void OnQuestCompletedCallback(string questId)
     {

@@ -4,7 +4,7 @@ RAXY Quest 2 provides an event-driven quest foundation for Unity projects: quest
 
 ## Features
 
-- **QuestSO / QuestDatabaseExampleSO** — quest definitions with requirements, steps, localized text, and `autoComplete` (complete after all steps, default on)
+- **QuestSO / IQuestDatabase** — quest definitions with requirements, steps, localized text, and `autoComplete` (complete after all steps, default on)
 - **QuestAction** — `TakeQuest`, `CompleteQuest`, `TriggerEventSO` for OnTaken / OnEnter / OnComplete / OnCompleted hooks
 - **QuestStep / QuestStepObjective** — step data with Sequential/Parallel modes, `actions_OnEnter` / `actions_OnComplete`, main and optional objectives
 - **QuestRequirementEventSO / QuestStepObjectiveEventSO** — `EventSO`-based channels for requirement updates and objective progress
@@ -14,8 +14,8 @@ RAXY Quest 2 provides an event-driven quest foundation for Unity projects: quest
 
 ## Setup
 
-1. Create a concrete manager extending `QuestManagerBase` (see `Scripts/Example/QuestManagerExample.cs`).
-2. Create a `QuestDatabaseExampleSO` asset and fill it with `QuestSO` assets.
+1. Create a concrete manager extending `QuestManagerBase` (see the Basic Setup sample, `SampleQuestManager`).
+2. Create a database asset that implements `IQuestDatabase` (the sample uses `SampleQuestDatabaseSO`) and fill it with `QuestSO` assets.
 3. Create `QuestRequirementEventSO` and `QuestStepObjectiveEventSO` assets and wire them into quest data.
 4. Call `InitQuestManager()` at bootstrap, then `TakeQuest(questId)` when starting quests.
 5. Raise objective events from gameplay code (kill, collect, talk, etc.) to advance progress.
@@ -45,4 +45,4 @@ Sample scripts (`SampleQuestManager`, tracker UI) live under the imported Sample
 
 ## Notes
 
-Game-specific objective raising, save/load, and bootstrap wiring should live in your project. `Scripts/Example/` contains a concrete manager and a smoke-test component for manual testing. Optional starter content is available via **Samples → Basic Setup**.
+Game-specific objective raising, save/load, and bootstrap wiring should live in your project. `Scripts/Example/` contains a smoke-test component for manual testing. The concrete manager lives in **Samples → Basic Setup** (`SampleQuestManager`).
