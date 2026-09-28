@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Demo Quest A
   m_EditorClassIdentifier: RAXY.Quest::RAXY.Quest.QuestSO
   questType: Main
+  legacyQuestType: -1
   autoComplete: 1
   questNameProvider:
     useLocalization: 0
-    directString: Talk to Guide
+    directString: Get to the Village
     stringLoc:
       localizedString:
         m_TableReference:
@@ -31,7 +32,7 @@ MonoBehaviour:
   questSteps:
   - questStepNameProvider:
       useLocalization: 0
-      directString: 
+      directString: Demo Step 1
       stringLoc:
         localizedString:
           m_TableReference:
@@ -65,3 +66,6 @@ MonoBehaviour:
     optionalObjectives: []
   actions_OnTaken: []
   actions_OnCompleted: []
+  references:
+    version: 2
+    RefIds: []

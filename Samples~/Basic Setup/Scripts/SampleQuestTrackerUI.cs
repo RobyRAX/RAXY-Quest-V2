@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using RAXY.Quest;
 using TMPro;
@@ -12,14 +13,17 @@ public class SampleQuestTrackerUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI stepNameTmp;
     [SerializeField] Transform objectivesContainer;
     [SerializeField] SampleQuestObjectiveRowUI objectiveRowPrefab;
+    [SerializeField] float fadeDuration = 0.125f;
 
     readonly List<SampleQuestObjectiveRowUI> _rows = new();
     CanvasGroup _canvasGroup;
+    Coroutine _fadeRoutine;
+    float _fadeTarget;
 
     void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
-        SetVisible(false);
+        SetVisible(false, immediate: true);
     }
 
     void Start()
@@ -149,13 +153,47 @@ public class SampleQuestTrackerUI : MonoBehaviour
         }
     }
 
-    void SetVisible(bool visible)
+    void SetVisible(bool visible, bool immediate = false)
     {
         if (_canvasGroup == null)
             return;
 
-        _canvasGroup.alpha = visible ? 1f : 0f;
         _canvasGroup.blocksRaycasts = false;
         _canvasGroup.interactable = false;
+
+        float target = visible ? 1f : 0f;
+        if (!immediate && _fadeRoutine != null && Mathf.Approximately(_fadeTarget, target))
+            return;
+
+        if (_fadeRoutine != null)
+        {
+            StopCoroutine(_fadeRoutine);
+            _fadeRoutine = null;
+        }
+
+        _fadeTarget = target;
+        if (immediate || fadeDuration <= 0f || Mathf.Approximately(_canvasGroup.alpha, target))
+        {
+            _canvasGroup.alpha = target;
+            return;
+        }
+
+        _fadeRoutine = StartCoroutine(FadeRoutine(target));
+    }
+
+    IEnumerator FadeRoutine(float target)
+    {
+        float start = _canvasGroup.alpha;
+        float elapsed = 0f;
+
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            _canvasGroup.alpha = Mathf.Lerp(start, target, Mathf.Clamp01(elapsed / fadeDuration));
+            yield return null;
+        }
+
+        _canvasGroup.alpha = target;
+        _fadeRoutine = null;
     }
 }
