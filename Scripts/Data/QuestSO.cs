@@ -28,6 +28,10 @@ namespace RAXY.Quest
         [LabelText("Auto Complete After Steps")]
         public bool autoComplete = true;
 
+        [TitleGroup("Quest Tags")]
+        [ValueDropdown("GetQuestTagOptions", IsUniqueList = true)]
+        public List<string> questTags = new();
+
         [TitleGroup("Quest Name")]
         [HideLabel]
         [HideReferenceObjectPicker]
@@ -59,6 +63,22 @@ namespace RAXY.Quest
         public string QuestId => name;
         public string QuestName => questNameProvider.String;
 
+        public IReadOnlyList<string> QuestTags => questTags;
+
+        public bool HasQuestTag(string tag)
+        {
+            if (string.IsNullOrEmpty(tag) || questTags == null)
+                return false;
+
+            for (int i = 0; i < questTags.Count; i++)
+            {
+                if (string.Equals(questTags[i], tag, StringComparison.Ordinal))
+                    return true;
+            }
+
+            return false;
+        }
+
         void OnEnable()
         {
             MigrateLegacyQuestType();
@@ -87,6 +107,11 @@ namespace RAXY.Quest
         IEnumerable GetQuestTypeOptions()
         {
             return QuestTypeEditorBridge.GetTypes();
+        }
+
+        IEnumerable GetQuestTagOptions()
+        {
+            return QuestTagEditorBridge.GetTags();
         }
 
         void DrawRefresh_Btn()

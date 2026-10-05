@@ -303,6 +303,8 @@ namespace RAXY.Quest
             return QuestStatusDict.TryGetValue(questId, out var status) ? status : null;
         }
 
+        public QuestSO GetQuestSO(string questId) => ResolveQuestSO(questId);
+
         public async UniTask Process_QuestActionsAsync(
             List<IQuestAction> actions,
             CancellationToken ct = default)

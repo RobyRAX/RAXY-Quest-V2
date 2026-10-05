@@ -4,7 +4,7 @@ RAXY Quest 2 provides an event-driven quest foundation for Unity projects: quest
 
 ## Features
 
-- **QuestSO / IQuestDatabase** — quest definitions with requirements, steps, localized text, and `autoComplete` (complete after all steps, default on)
+- **QuestSO / IQuestDatabase** — quest definitions with requirements, steps, localized text, optional multi **quest tags** (Project Hub list + generated `QuestTags` constants), and `autoComplete` (complete after all steps, default on)
 - **QuestAction** — `TakeQuest`, `CompleteQuest`, `TriggerEventSO` for OnTaken / OnEnter / OnComplete / OnCompleted hooks
 - **QuestStep / QuestStepObjective** — step data with Sequential/Parallel modes, `actions_OnEnter` / `actions_OnComplete`, main and optional objectives
 - **QuestRequirementEventSO / QuestStepObjectiveEventSO** — `EventSO`-based channels for requirement updates and objective progress

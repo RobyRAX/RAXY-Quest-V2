@@ -58,6 +58,8 @@ namespace RAXY.Quest.Editor
                 EditorGUILayout.Space(10f);
                 DrawQuestTypesSection();
                 EditorGUILayout.Space(10f);
+                DrawQuestTagsSection();
+                EditorGUILayout.Space(10f);
                 DrawToolbar();
                 EditorGUILayout.Space(6f);
                 DrawQuestList();
@@ -219,6 +221,70 @@ namespace RAXY.Quest.Editor
                 settings.EnsureMainLocked();
                 settings.SaveSettings();
             }
+
+            RaxyHubGui.EndCard();
+        }
+
+        void DrawQuestTagsSection()
+        {
+            var settings = QuestEditorSettings.instance;
+            var tags = settings.MutableQuestTags;
+
+            RaxyHubGui.BeginCard();
+            EditorGUILayout.LabelField("Quest Tags", EditorStyles.boldLabel);
+            RaxyHubGui.DrawHint(
+                "Optional metadata per quest (multi-select on Quest SO). Generate C# writes QuestTags constants.");
+
+            EditorGUILayout.Space(4f);
+
+            EditorGUI.BeginChangeCheck();
+
+            int deleteIndex = -1;
+            for (int i = 0; i < tags.Count; i++)
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    tags[i] = EditorGUILayout.TextField(tags[i] ?? string.Empty);
+                    if (GUILayout.Button("Remove", GUILayout.Width(70f)))
+                        deleteIndex = i;
+                }
+            }
+
+            if (deleteIndex >= 0)
+            {
+                tags.RemoveAt(deleteIndex);
+                GUI.FocusControl(null);
+            }
+
+            EditorGUILayout.Space(4f);
+            if (RaxyHubGui.SecondaryButton("Add Tag", 100f))
+            {
+                tags.Add(string.Empty);
+                GUI.FocusControl(null);
+            }
+
+            EditorGUILayout.Space(8f);
+            settings.GeneratedTagsScriptPath = EditorGUILayout.TextField(
+                "Generated Tags Script Path",
+                settings.GeneratedTagsScriptPath);
+
+            EditorGUILayout.Space(4f);
+            if (RaxyHubGui.PrimaryButton("Generate Quest Tags C# Script"))
+            {
+                settings.SaveSettings();
+
+                if (QuestTagsCodeGenerator.TryGenerate(out string absolutePath, out string error))
+                {
+                    Debug.Log($"[RAXY Hub / Quest] Generated QuestTags at '{absolutePath}'.");
+                }
+                else
+                {
+                    Debug.LogError($"[RAXY Hub / Quest] Generate tags failed: {error}");
+                }
+            }
+
+            if (EditorGUI.EndChangeCheck())
+                settings.SaveSettings();
 
             RaxyHubGui.EndCard();
         }

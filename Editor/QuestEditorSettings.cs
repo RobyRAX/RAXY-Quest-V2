@@ -13,12 +13,19 @@ namespace RAXY.Quest.Editor
     public sealed class QuestEditorSettings : ScriptableSingleton<QuestEditorSettings>
     {
         public const string DefaultGeneratedScriptPath = "Assets/RAXY Generated/QuestTypes.cs";
+        public const string DefaultGeneratedTagsScriptPath = "Assets/RAXY Generated/QuestTags.cs";
 
         [SerializeField]
         List<string> questTypes = new() { QuestTypeIds.Main, "Side" };
 
         [SerializeField]
+        List<string> questTags = new();
+
+        [SerializeField]
         string generatedScriptPath = DefaultGeneratedScriptPath;
+
+        [SerializeField]
+        string generatedTagsScriptPath = DefaultGeneratedTagsScriptPath;
 
         [SerializeField]
         string generatedNamespace = "RAXY.Quest";
@@ -40,6 +47,34 @@ namespace RAXY.Quest.Editor
             set => generatedScriptPath = value;
         }
 
+        public IReadOnlyList<string> QuestTags
+        {
+            get
+            {
+                if (questTags == null)
+                    questTags = new List<string>();
+                return questTags;
+            }
+        }
+
+        public List<string> MutableQuestTags
+        {
+            get
+            {
+                if (questTags == null)
+                    questTags = new List<string>();
+                return questTags;
+            }
+        }
+
+        public string GeneratedTagsScriptPath
+        {
+            get => string.IsNullOrWhiteSpace(generatedTagsScriptPath)
+                ? DefaultGeneratedTagsScriptPath
+                : generatedTagsScriptPath;
+            set => generatedTagsScriptPath = value;
+        }
+
         public string GeneratedNamespace
         {
             get => generatedNamespace ?? string.Empty;
@@ -59,6 +94,7 @@ namespace RAXY.Quest.Editor
         static void RegisterBridge()
         {
             QuestTypeEditorBridge.SetProvider(() => instance.QuestTypes);
+            QuestTagEditorBridge.SetProvider(() => instance.QuestTags);
             instance.EnsureMainLocked();
         }
 
