@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace RAXY.Quest
 {
-    public abstract class QuestManagerBase : MonoBehaviour
+    public abstract partial class QuestManagerBase : MonoBehaviour
     {
         public static QuestManagerBase BaseInstance { get; set; }
 
@@ -198,27 +198,7 @@ namespace RAXY.Quest
             status.SetInProgress();
 
             var questRuntime = new Quest_Runtime(questData);
-            questRuntime.OnStepChanged += stepIndex =>
-            {
-                OnQuestStepChanged?.Invoke(questId, stepIndex);
-                Process_StepEnterActions(questId, questData, stepIndex);
-                RefreshQuestObjects();
-            };
-            questRuntime.OnStepCompleted += stepIndex =>
-            {
-                Process_StepCompleteActions(questId, questData, stepIndex);
-            };
-            questRuntime.OnObjectiveProgressed += objective =>
-            {
-                OnObjectiveProgressed?.Invoke(objective);
-                RefreshQuestObjects();
-            };
-            questRuntime.OnObjectiveCompleted += objective =>
-            {
-                OnObjectiveCompleted?.Invoke(objective);
-                RefreshQuestObjects();
-            };
-            questRuntime.OnQuestCompleted += () => QuestCompletedHandler(questId);
+            WireQuestRuntime(questId, questData, questRuntime);
 
             ActiveQuests.Add(questId, questRuntime);
 
@@ -431,7 +411,7 @@ namespace RAXY.Quest
             _requirementHandlers.Clear();
         }
 
-        void OnDestroy()
+        protected virtual void OnDestroy()
         {
             UnsubscribeAllRequirements();
 

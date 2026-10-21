@@ -11,6 +11,13 @@ RAXY Quest 2 provides an event-driven quest foundation for Unity projects: quest
 - **Quest_Runtime / QuestStep_Runtime / QuestStepObjective_Runtime** — live play-mode wrappers that track progression and completion
 - **QuestStatus_Runtime** — per-quest availability state (`NotStarted` → `CanBeTaken` → `InProgress` → `Completed`)
 - **QuestManagerBase** — abstract orchestrator: requirement tracking, take/complete quests, quest events
+- **QuestSnapshot** — detached, versioned quest progress for game-owned save systems
+
+## Save/load integration
+
+Call `CaptureSnapshot()` on `QuestManagerBase` and serialize the returned `QuestSnapshot` through the game's save system. Once the quest database is set and other gameplay state needed by objectives is restored, pass the deserialized snapshot to `RestoreSnapshot(snapshot)`. The method returns `false` for an invalid or unsupported snapshot and leaves current quest state unchanged. It skips unknown quests or active quests whose definition layout changed.
+
+Restore rebuilds objective event subscriptions and refreshes quest objects, then raises `OnSnapshotRestored` once for UI. It does not replay take/complete actions, rewards, progress events, or quest notifications. The game is responsible for reconciling state-derived objectives such as currently owned items afterward. Snapshot version 1 maps steps and objectives by index and checks their definition signature; content migrations require an explicit new snapshot version.
 
 ## Setup
 

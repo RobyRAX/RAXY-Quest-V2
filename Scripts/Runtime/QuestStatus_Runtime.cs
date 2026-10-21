@@ -73,6 +73,11 @@ namespace RAXY.Quest
             CompletionState = QuestCompletionState.Completed;
         }
 
+        internal void RestoreState(QuestCompletionState state)
+        {
+            CompletionState = state;
+        }
+
         static bool MeetsListRequirement(List<string> current, List<string> required)
         {
             if (required == null || required.Count == 0)

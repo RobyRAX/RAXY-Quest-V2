@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add versioned quest snapshots with side-effect-free restore for project-owned save systems.
+
 ## [1.1.0] - CompleteQuest action + autoComplete
 
 - Added `CompleteQuest` action (optional `QuestSO`; falls back to context quest id).

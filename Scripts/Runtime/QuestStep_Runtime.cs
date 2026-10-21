@@ -136,16 +136,56 @@ namespace RAXY.Quest
 
         void ActivateObjective(QuestStepObjective_Runtime objective, bool isMainObjective = false)
         {
+            BindObjective(objective, isMainObjective);
+            objective.Activate();
+        }
+
+        void BindObjective(QuestStepObjective_Runtime objective, bool isMainObjective)
+        {
             objective.OnProgressed -= ObjectiveProgressedHandler;
             objective.OnCompleted -= ObjectiveCompletedHandler;
+            objective.OnCompleted -= MainObjectiveCompletedHandler;
 
             objective.OnProgressed += ObjectiveProgressedHandler;
             objective.OnCompleted += ObjectiveCompletedHandler;
 
             if (isMainObjective)
-                objective.OnCompleted += _ => MainObjectiveCompletedHandler(objective);
+                objective.OnCompleted += MainObjectiveCompletedHandler;
+        }
 
-            objective.Activate();
+        internal void RestoreState(QuestStepSnapshot snapshot)
+        {
+            Deactivate();
+            State = snapshot.state;
+            ActiveMainObjectiveIndex = snapshot.activeMainObjectiveIndex;
+            for (int i = 0; i < MainObjectives.Count; i++)
+                MainObjectives[i].RestoreState(snapshot.mainObjectives[i]);
+            for (int i = 0; i < OptionalObjectives.Count; i++)
+                OptionalObjectives[i].RestoreState(snapshot.optionalObjectives[i]);
+        }
+
+        internal void ResumeSubscriptions()
+        {
+            if (State != QuestCompletionState.InProgress)
+                return;
+
+            for (int i = 0; i < MainObjectives.Count; i++)
+            {
+                var objective = MainObjectives[i];
+                if (objective.State != QuestCompletionState.InProgress ||
+                    (StepMode == QuestStepMode.Sequential && i != ActiveMainObjectiveIndex))
+                    continue;
+                BindObjective(objective, true);
+                objective.ResumeSubscription();
+            }
+
+            foreach (var objective in OptionalObjectives)
+            {
+                if (objective.State != QuestCompletionState.InProgress)
+                    continue;
+                BindObjective(objective, false);
+                objective.ResumeSubscription();
+            }
         }
 
         void ObjectiveProgressedHandler(QuestStepObjective_Runtime objective)

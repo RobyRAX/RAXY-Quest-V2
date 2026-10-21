@@ -75,6 +75,14 @@ namespace RAXY.Quest
             State = QuestCompletionState.InProgress;
 
             var step = QuestSteps_Runtime[index];
+            BindStep(step);
+            step.Activate();
+            // Use CurrentQuestStepIndex so nested auto-advances report the final step.
+            OnStepChanged?.Invoke(CurrentQuestStepIndex);
+        }
+
+        void BindStep(QuestStep_Runtime step)
+        {
             step.OnStepCompleted -= StepCompletedHandler;
             step.OnObjectiveProgressed -= ObjectiveProgressedHandler;
             step.OnObjectiveCompleted -= ObjectiveCompletedHandler;
@@ -82,10 +90,23 @@ namespace RAXY.Quest
             step.OnStepCompleted += StepCompletedHandler;
             step.OnObjectiveProgressed += ObjectiveProgressedHandler;
             step.OnObjectiveCompleted += ObjectiveCompletedHandler;
+        }
 
-            step.Activate();
-            // Use CurrentQuestStepIndex so nested auto-advances report the final step.
-            OnStepChanged?.Invoke(CurrentQuestStepIndex);
+        internal void RestoreState(QuestRuntimeSnapshot snapshot)
+        {
+            Deactivate();
+            for (int i = 0; i < QuestSteps_Runtime.Count; i++)
+                QuestSteps_Runtime[i].RestoreState(snapshot.steps[i]);
+            CurrentQuestStepIndex = snapshot.currentStepIndex;
+            State = QuestCompletionState.InProgress;
+        }
+
+        internal void ResumeSubscriptions()
+        {
+            if (ActiveStep == null)
+                return;
+            BindStep(ActiveStep);
+            ActiveStep.ResumeSubscriptions();
         }
 
         public void CompleteActiveStep()

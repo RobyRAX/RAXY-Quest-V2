@@ -50,6 +50,21 @@ namespace RAXY.Quest
 
             State = QuestCompletionState.InProgress;
 
+            ResumeSubscription();
+        }
+
+        internal void RestoreState(QuestObjectiveSnapshot snapshot)
+        {
+            Deactivate();
+            State = snapshot.state;
+            CurrentAmount = snapshot.currentAmount;
+        }
+
+        internal void ResumeSubscription()
+        {
+            if (State != QuestCompletionState.InProgress)
+                return;
+
             var eventSO = QuestStepObjectiveData?.eventSO;
             if (eventSO == null)
                 return;
