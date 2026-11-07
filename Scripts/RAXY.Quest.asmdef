@@ -2,6 +2,7 @@
     "name": "RAXY.Quest",
     "rootNamespace": "RAXY.Quest",
     "references": [
+        "RAXY.Sequence",
         "RAXY.Event",
         "RAXY.Utility.Localization",
         "UniTask"

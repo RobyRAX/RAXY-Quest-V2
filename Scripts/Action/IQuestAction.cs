@@ -1,12 +1,10 @@
-using System.Threading;
-using Cysharp.Threading.Tasks;
+using System;
+using RAXY.Sequence;
 
 namespace RAXY.Quest
 {
-    public interface IQuestAction
+    [Obsolete("Use RAXY.Sequence.ISequenceable instead.")]
+    public interface IQuestAction : ISequenceable
     {
-        string Label { get; }
-
-        UniTask ExecuteAsync(CancellationToken ct = default);
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using RAXY.Sequence;
 using RAXY.Utility.Localization;
 using Cysharp.Threading.Tasks;
 using System;
@@ -52,13 +53,13 @@ namespace RAXY.Quest
         [SerializeReference]
         [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Label", Expanded = true)]
         [HideReferenceObjectPicker]
-        public List<IQuestAction> actions_OnTaken = new();
+        public List<ISequenceable> actions_OnTaken = new();
 
         [TitleGroup("Quest Actions")]
         [SerializeReference]
         [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Label", Expanded = true)]
         [HideReferenceObjectPicker]
-        public List<IQuestAction> actions_OnCompleted = new();
+        public List<ISequenceable> actions_OnCompleted = new();
 
         public string QuestId => name;
         public string QuestName => questNameProvider.String;

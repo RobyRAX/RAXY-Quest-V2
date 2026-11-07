@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using RAXY.Sequence;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -286,23 +287,21 @@ namespace RAXY.Quest
         public QuestSO GetQuestSO(string questId) => ResolveQuestSO(questId);
 
         public async UniTask Process_QuestActionsAsync(
+            IReadOnlyList<ISequenceable> actions,
+            CancellationToken ct = default)
+        {
+            await SequenceRunner.RunAsync(actions, ct);
+        }
+
+        [Obsolete("Use overload with IReadOnlyList<ISequenceable> instead.")]
+        public UniTask Process_QuestActionsAsync(
             List<IQuestAction> actions,
             CancellationToken ct = default)
         {
-            if (actions == null)
-                return;
-
-            foreach (var action in actions)
-            {
-                ct.ThrowIfCancellationRequested();
-                if (action == null)
-                    continue;
-
-                await action.ExecuteAsync(ct);
-            }
+            return Process_QuestActionsAsync((IReadOnlyList<ISequenceable>)actions, ct);
         }
 
-        void Process_QuestActions(List<IQuestAction> actions)
+        void Process_QuestActions(IReadOnlyList<ISequenceable> actions)
             => Process_QuestActionsAsync(actions).Forget();
 
         void Process_StepEnterActions(string questId, QuestSO questData, int stepIndex)

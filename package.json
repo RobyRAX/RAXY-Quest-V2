@@ -8,6 +8,7 @@
     "url": "https://github.com/RobyRAX"
   },
   "dependencies": {
+    "com.raxy.sequence": "1.0.0",
     "com.raxy.event": "1.0.0",
     "com.raxy.utility.localization": "1.0.0",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"

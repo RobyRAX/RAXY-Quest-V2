@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RAXY.Sequence;
 using RAXY.Utility.Localization;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -20,13 +21,13 @@ namespace RAXY.Quest
         [SerializeReference]
         [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Label", Expanded = true)]
         [HideReferenceObjectPicker]
-        public List<IQuestAction> actions_OnEnter = new();
+        public List<ISequenceable> actions_OnEnter = new();
 
         [TitleGroup("Step Actions")]
         [SerializeReference]
         [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Label", Expanded = true)]
         [HideReferenceObjectPicker]
-        public List<IQuestAction> actions_OnComplete = new();
+        public List<ISequenceable> actions_OnComplete = new();
 
         [TitleGroup("Objectives")]
         [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "ObjectiveDescription", Expanded = true)]

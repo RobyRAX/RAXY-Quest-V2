@@ -1,23 +1,24 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using RAXY.Sequence;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RAXY.Quest
 {
     [Serializable]
-    public class CompleteQuest : IQuestAction
+    public class CompleteQuest : SequenceableBase, IQuestAction
     {
         [HideLabel]
         public QuestSO questToComplete;
 
-        public string Label =>
+        public override string Label =>
             questToComplete != null
                 ? $"CompleteQuest ({questToComplete.QuestId})"
                 : "CompleteQuest";
 
-        public UniTask ExecuteAsync(CancellationToken ct = default)
+        public override UniTask ExecuteAsync(CancellationToken ct = default)
         {
             if (questToComplete == null)
             {
