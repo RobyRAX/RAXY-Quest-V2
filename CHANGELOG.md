@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.2] - 2026-11-16
+
+- Removed duplicate `RAXY.Quest.TriggerEventSO` action in favor of `RAXY.Sequence.TriggerEventSO`.
+- Updated `com.raxy.sequence` dependency to `1.1.0`.
+
 ## Unreleased
 
 - Add versioned quest snapshots with side-effect-free restore for project-owned save systems.
