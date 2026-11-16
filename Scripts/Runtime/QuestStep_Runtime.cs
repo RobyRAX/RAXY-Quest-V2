@@ -52,6 +52,7 @@ namespace RAXY.Quest
         public event Action OnStepCompleted;
         public event Action<QuestStepObjective_Runtime> OnObjectiveProgressed;
         public event Action<QuestStepObjective_Runtime> OnObjectiveCompleted;
+        public event Action<QuestStepObjective_Runtime> OnMainObjectiveActivated;
 
         public QuestStep_Runtime(QuestStep data)
         {
@@ -132,6 +133,7 @@ namespace RAXY.Quest
 
             ActiveMainObjectiveIndex = index;
             ActivateObjective(selected, isMainObjective: true);
+            OnMainObjectiveActivated?.Invoke(selected);
         }
 
         void ActivateObjective(QuestStepObjective_Runtime objective, bool isMainObjective = false)

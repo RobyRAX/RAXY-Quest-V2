@@ -40,6 +40,7 @@ namespace RAXY.Quest
         public event Action<int> OnStepCompleted;
         public event Action<QuestStepObjective_Runtime> OnObjectiveProgressed;
         public event Action<QuestStepObjective_Runtime> OnObjectiveCompleted;
+        public event Action<QuestStepObjective_Runtime> OnMainObjectiveActivated;
         public event Action OnQuestCompleted;
 
         public Quest_Runtime(QuestSO data)
@@ -86,10 +87,12 @@ namespace RAXY.Quest
             step.OnStepCompleted -= StepCompletedHandler;
             step.OnObjectiveProgressed -= ObjectiveProgressedHandler;
             step.OnObjectiveCompleted -= ObjectiveCompletedHandler;
+            step.OnMainObjectiveActivated -= MainObjectiveActivatedHandler;
 
             step.OnStepCompleted += StepCompletedHandler;
             step.OnObjectiveProgressed += ObjectiveProgressedHandler;
             step.OnObjectiveCompleted += ObjectiveCompletedHandler;
+            step.OnMainObjectiveActivated += MainObjectiveActivatedHandler;
         }
 
         internal void RestoreState(QuestRuntimeSnapshot snapshot)
@@ -170,6 +173,11 @@ namespace RAXY.Quest
         void ObjectiveCompletedHandler(QuestStepObjective_Runtime objective)
         {
             OnObjectiveCompleted?.Invoke(objective);
+        }
+
+        void MainObjectiveActivatedHandler(QuestStepObjective_Runtime objective)
+        {
+            OnMainObjectiveActivated?.Invoke(objective);
         }
 
 #if UNITY_EDITOR

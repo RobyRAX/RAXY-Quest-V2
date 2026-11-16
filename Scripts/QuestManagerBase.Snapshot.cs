@@ -275,6 +275,7 @@ namespace RAXY.Quest
                 OnObjectiveCompleted?.Invoke(objective);
                 RefreshQuestObjects();
             };
+            runtime.OnMainObjectiveActivated += _ => RefreshQuestObjects();
             runtime.OnQuestCompleted += () => QuestCompletedHandler(questId);
         }
     }

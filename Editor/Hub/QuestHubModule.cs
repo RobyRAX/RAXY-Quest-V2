@@ -371,7 +371,85 @@ namespace RAXY.Quest.Editor
                 }
             }
 
+            if (hasManager)
+                DrawActiveObjectives(questId);
+
             RaxyHubGui.EndCard();
+        }
+
+        void DrawActiveObjectives(string questId)
+        {
+            var quest = QuestManagerBase.BaseInstance?.GetActiveQuest(questId);
+            var step = quest?.ActiveStep;
+            if (step == null)
+                return;
+
+            EditorGUILayout.Space(6f);
+            EditorGUILayout.LabelField(
+                $"Current Step {quest.CurrentQuestStepIndex + 1}: {step.StepName}",
+                EditorStyles.boldLabel);
+
+            DrawObjectiveList("Main Objectives", step.MainObjectives);
+            DrawObjectiveList("Optional Objectives", step.OptionalObjectives);
+        }
+
+        void DrawObjectiveList(string title, List<QuestStepObjective_Runtime> objectives)
+        {
+            if (objectives == null || objectives.Count == 0)
+                return;
+
+            EditorGUILayout.LabelField(title, EditorStyles.miniBoldLabel);
+            foreach (var objective in objectives)
+            {
+                if (objective == null)
+                    continue;
+
+                string label = string.IsNullOrWhiteSpace(objective.ObjectiveDescription)
+                    ? objective.ObjectiveParameter
+                    : objective.ObjectiveDescription;
+                if (string.IsNullOrWhiteSpace(label))
+                    label = "Objective";
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LabelField(
+                        $"{label}  ({objective.CurrentAmount:0.##}/{objective.RequiredAmount:0.##})",
+                        GUILayout.MinWidth(160f));
+
+                    using (new EditorGUI.DisabledScope(objective.State != QuestCompletionState.InProgress))
+                    {
+                        if (GUILayout.Button("+1", GUILayout.Width(40f)))
+                            RaiseObjectiveProgress(objective, 1f);
+
+                        if (GUILayout.Button("Complete Objective", GUILayout.Width(135f)))
+                        {
+                            float remaining = Mathf.Max(0f, objective.RequiredAmount - objective.CurrentAmount);
+                            RaiseObjectiveProgress(objective, remaining > 0f ? remaining : 1f);
+                        }
+                    }
+                }
+            }
+        }
+
+        void RaiseObjectiveProgress(QuestStepObjective_Runtime objective, float amount)
+        {
+            if (objective.State != QuestCompletionState.InProgress)
+                return;
+
+            if (objective.ObjectiveEventSO != null)
+            {
+                objective.ObjectiveEventSO.Raise(new ObjectiveParameter
+                {
+                    parameter = objective.ObjectiveParameter,
+                    amount = amount
+                });
+            }
+            else
+            {
+                objective.AddProgress(amount);
+            }
+
+            EditorWindow.GetWindow<RaxyProjectHubWindow>()?.Repaint();
         }
 
         string GetStatusLabel(string questId)

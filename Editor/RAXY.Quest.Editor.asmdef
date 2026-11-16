@@ -3,6 +3,7 @@
     "rootNamespace": "RAXY.Quest.Editor",
     "references": [
         "RAXY.Quest",
+        "RAXY.Event",
         "RAXY.Utility.Editor"
     ],
     "includePlatforms": [
