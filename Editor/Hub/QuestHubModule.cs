@@ -389,6 +389,12 @@ namespace RAXY.Quest.Editor
                 $"Current Step {quest.CurrentQuestStepIndex + 1}: {step.StepName}",
                 EditorStyles.boldLabel);
 
+            if (GUILayout.Button("Complete Step", GUILayout.Width(135f)))
+            {
+                QuestManagerBase.BaseInstance?.CompleteActiveStepDirectly(questId);
+                EditorWindow.GetWindow<RaxyProjectHubWindow>()?.Repaint();
+            }
+
             DrawObjectiveList("Main Objectives", step.MainObjectives);
             DrawObjectiveList("Optional Objectives", step.OptionalObjectives);
         }
@@ -425,6 +431,12 @@ namespace RAXY.Quest.Editor
                         {
                             float remaining = Mathf.Max(0f, objective.RequiredAmount - objective.CurrentAmount);
                             RaiseObjectiveProgress(objective, remaining > 0f ? remaining : 1f);
+                        }
+
+                        if (GUILayout.Button("Complete Direct", GUILayout.Width(115f)))
+                        {
+                            QuestManagerBase.BaseInstance?.CompleteObjectiveDirectly(objective);
+                            EditorWindow.GetWindow<RaxyProjectHubWindow>()?.Repaint();
                         }
                     }
                 }

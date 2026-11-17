@@ -260,19 +260,28 @@ namespace RAXY.Quest
         {
             runtime.OnStepChanged += stepIndex =>
             {
-                OnQuestStepChanged?.Invoke(questId, stepIndex);
-                Process_StepEnterActions(questId, questData, stepIndex);
+                if (!_suppressQuestNotifications)
+                {
+                    OnQuestStepChanged?.Invoke(questId, stepIndex);
+                    Process_StepEnterActions(questId, questData, stepIndex);
+                }
                 RefreshQuestObjects();
             };
-            runtime.OnStepCompleted += stepIndex => Process_StepCompleteActions(questId, questData, stepIndex);
+            runtime.OnStepCompleted += stepIndex =>
+            {
+                if (!_suppressQuestNotifications)
+                    Process_StepCompleteActions(questId, questData, stepIndex);
+            };
             runtime.OnObjectiveProgressed += objective =>
             {
-                OnObjectiveProgressed?.Invoke(objective);
+                if (!_suppressQuestNotifications)
+                    OnObjectiveProgressed?.Invoke(objective);
                 RefreshQuestObjects();
             };
             runtime.OnObjectiveCompleted += objective =>
             {
-                OnObjectiveCompleted?.Invoke(objective);
+                if (!_suppressQuestNotifications)
+                    OnObjectiveCompleted?.Invoke(objective);
                 RefreshQuestObjects();
             };
             runtime.OnMainObjectiveActivated += _ => RefreshQuestObjects();

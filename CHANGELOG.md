@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.3] - 2026-11-17
+
+- Added Project Hub buttons to complete an objective or active step directly without raising quest notifications or running quest actions; quest objects still refresh.
+
 ## [1.1.2] - 2026-11-16
 
 - Removed duplicate `RAXY.Quest.TriggerEventSO` action in favor of `RAXY.Sequence.TriggerEventSO`.

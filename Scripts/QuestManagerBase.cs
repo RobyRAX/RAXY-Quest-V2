@@ -49,6 +49,40 @@ namespace RAXY.Quest
         public Dictionary<string, Quest_Runtime> ActiveQuests { get; private set; } = new();
 
         readonly Dictionary<QuestRequirementEventSO, Action<QuestRequirementParameter>> _requirementHandlers = new();
+        bool _suppressQuestNotifications;
+
+        public void CompleteActiveStepDirectly(string questId)
+        {
+            var quest = GetActiveQuest(questId);
+            if (quest?.ActiveStep == null)
+                return;
+
+            RunWithoutQuestNotifications(quest.CompleteActiveStep);
+        }
+
+        public void CompleteObjectiveDirectly(QuestStepObjective_Runtime objective)
+        {
+            if (objective == null || objective.State != QuestCompletionState.InProgress)
+                return;
+
+            float remaining = Mathf.Max(0f, objective.RequiredAmount - objective.CurrentAmount);
+            RunWithoutQuestNotifications(() => objective.AddProgress(remaining > 0f ? remaining : 1f));
+        }
+
+        void RunWithoutQuestNotifications(Action action)
+        {
+            bool wasSuppressed = _suppressQuestNotifications;
+            _suppressQuestNotifications = true;
+            try
+            {
+                action();
+            }
+            finally
+            {
+                _suppressQuestNotifications = wasSuppressed;
+                RefreshQuestObjects();
+            }
+        }
 
         [TitleGroup("Quest Objects")]
         public List<QuestObject> questObjects = new();
@@ -238,7 +272,8 @@ namespace RAXY.Quest
         public void UntrackQuest()
         {
             trackedQuest = "";
-            OnTrackedQuestChanged?.Invoke(trackedQuest);
+            if (!_suppressQuestNotifications)
+                OnTrackedQuestChanged?.Invoke(trackedQuest);
         }
 
         [TitleGroup("Debug Function")]
@@ -266,9 +301,12 @@ namespace RAXY.Quest
             if (QuestStatusDict != null && QuestStatusDict.TryGetValue(questId, out var status))
                 status.SetCompleted();
 
-            OnQuestCompleted?.Invoke(questId);
-            OnQuestCompletedCallback(questId);
-            Process_QuestActions(questData?.actions_OnCompleted);
+            if (!_suppressQuestNotifications)
+            {
+                OnQuestCompleted?.Invoke(questId);
+                OnQuestCompletedCallback(questId);
+                Process_QuestActions(questData?.actions_OnCompleted);
+            }
             RefreshQuestObjects();
         }
 
@@ -358,9 +396,12 @@ namespace RAXY.Quest
                 status.SetCompleted();
 
             Debug.Log($"[QuestManager] Quest '{questId}' completed.");
-            OnQuestCompleted?.Invoke(questId);
-            OnQuestCompletedCallback(questId);
-            Process_QuestActions(questData?.actions_OnCompleted);
+            if (!_suppressQuestNotifications)
+            {
+                OnQuestCompleted?.Invoke(questId);
+                OnQuestCompletedCallback(questId);
+                Process_QuestActions(questData?.actions_OnCompleted);
+            }
             RefreshQuestObjects();
         }
 
